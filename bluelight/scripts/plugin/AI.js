@@ -1,5 +1,5 @@
 var openAIModel = false;
-let aimodelname, Multiple, aiInfo;
+let aimodelname, Multiple, aiInfo, url;
 let aiInfoArray = [];
 function loadAIModel() {
   var span = document.createElement("SPAN");
@@ -112,8 +112,8 @@ getByid("runmodel").onclick = function () {
       .then(function (response) {
         if (response.status == 200 && Multiple == "Single") {
           getByid("circle").style.display = "none";
-          aiInfo = response.data.airesult;
-          console.log(aiInfo);
+          console.log(response.data);
+          loadImageFromArrayBuffer(response.data);
         } else if (response.status == 200 && Multiple == "Multiple") {
           getByid("circle").style.display = "none";
           for (var i = 0; i < response.data.length; i++) {
@@ -128,3 +128,78 @@ getByid("runmodel").onclick = function () {
       });
   }
 };
+
+function loadImageFromArrayBuffer(response) {
+  // Assuming '_streams' contains the array of streams
+  var streams = response._streams;
+
+  // Assuming the second element in the 'streams' array contains the .dcm file data
+  var dcmBuffer = streams[1].data;
+
+  // Use dicomParser to parse the .dcm file
+  var dataSet = dicomParser.parseDicom(new Uint8Array(dcmBuffer));
+
+  // Get the pixel data
+  var pixelDataElement = dataSet.elements.x7fe00010;
+  var pixelData = new Uint8Array(
+    dataSet.byteArray.buffer,
+    pixelDataElement.dataOffset,
+    pixelDataElement.length
+  );
+
+  // Assuming the image width and height are known, you can replace them with actual values
+  var width = 512;
+  var height = 512;
+
+  // Create a canvas element and set its width and height
+  var canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+
+  // Append the canvas to the DOM
+  document.body.appendChild(canvas);
+
+  // Get the 2D context of the canvas
+  var ctx = canvas.getContext("2d");
+
+  // Create an ImageData object with the pixel data
+  var imageData = ctx.createImageData(width, height);
+  imageData.data.set(pixelData);
+
+  // Draw the image data on the canvas
+  ctx.putImageData(imageData, 0, 0);
+}
+
+function loadFileFromURL(url) {
+  function basename(path) {
+    return path.split(".").reverse()[0];
+  }
+
+  if (basename(url) == "mht") {
+    wadorsLoader(url);
+  } else {
+    loadAndViewImage("wadouri:" + url);
+
+    function load(time) {
+      return new Promise((resolve) => setTimeout(resolve, time));
+    }
+
+    load(100).then(() => {
+      readXML(url);
+      readDicom(url, PatientMark, true);
+    });
+  }
+}
+
+function processFormData(formData) {
+  var file = formData.get("file"); // 假設檔案的 key 是 "file"，請根據實際情況修改 key
+
+  if (file instanceof File) {
+    // 如果是 File 物件，則處理為 URL 並加載檔案
+    var url = URL.createObjectURL(file);
+    loadFileFromURL(url);
+  } else {
+    // 若不是 File 物件，請處理對應的資料型態
+    console.error("無效的檔案資料");
+  }
+}
