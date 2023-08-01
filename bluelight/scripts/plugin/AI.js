@@ -1,5 +1,5 @@
 var openAIModel = false;
-let aimodelname, Multiple, aiInfo, url;
+let aimodelname, Multiple, aiInfo, url, file;
 let aiInfoArray = [];
 function loadAIModel() {
   var span = document.createElement("SPAN");
@@ -29,12 +29,13 @@ function loadAIModel() {
         <option id="multi">Multiple</option>
         </select>
         <button id="runmodel">Run</button>
-        <div id="circle" style="border: 8px solid #f3f3f3; /* Light grey */
-        border-top: 8px solid #3498db; /* Blue */
+        <div id="circle" style="border: 8px solid #f3f3f3;
+        border-top: 8px solid #3498db;
         border-radius: 50%;
         width: 12px;
         height: 12px;
-        animation: spin 2s linear infinite;"
+        animation: spin 2s linear infinite;"></div>
+        <input type="file" id="AIModelFile" />
       </div>`;
   getByid("page-header").appendChild(span);
   getByid("AIModeldiv").style.display = "none";
@@ -49,6 +50,16 @@ getByid("AIModelSelect").onchange = function (e) {
 getByid("mulSelect").onchange = function (e) {
   Multiple = e.target.value;
 };
+
+getByid("AIModelFile").onchange = function (e) {
+  for(var i = 0; i < e.target.files.length; i++){
+    file = e.target.files[i];
+    url = URL.createObjectURL(file);
+    aiInfoArray.push(url);
+  }
+  console.log(aiInfoArray);
+}
+
 
 getByid("AIModel").onclick = function () {
   openAIModel = !openAIModel;
@@ -111,7 +122,8 @@ getByid("runmodel").onclick = function () {
       .then(function (response) {
         if (response.status == 200 && Multiple == "Single") {
           getByid("circle").style.display = "none";
-          console.log(response.data);
+          console.log(response.data._streams[1].data);
+          blob(response.data._streams[1].data);
         } else if (response.status == 200 && Multiple == "Multiple") {
           getByid("circle").style.display = "none";
           for (var i = 0; i < response.data.length; i++) {
@@ -126,5 +138,20 @@ getByid("runmodel").onclick = function () {
       });
   }
 };
+
+function blob(streamsData) {
+  resetViewport();
+  var blob = new Blob([streamsData])
+  const url = URL.createObjectURL(blob)
+  console.log(url);
+  loadAndViewImage("wadouri:" + url);
+  function load(time) {
+    return new Promise((resolve) => setTimeout(resolve, time));
+  }
+  load(100).then(() => {
+    readXML(url);
+    readDicom(url, PatientMark, true);
+  });
+}
 
 
