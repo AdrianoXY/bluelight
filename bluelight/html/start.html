@@ -71,7 +71,6 @@
     }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/dicom-parser/dist/dicomParser.min.js"></script>
 </head>
 
 <body style="background-color:#000000;" onmousewheel="/*return false;*/">
@@ -221,6 +220,8 @@
     </label>
     <div id="magnifierDiv" style="z-index:40;position: absolute;pointer-events: none;"><canvas
         id="magnifierCanvas"></canvas></div>
+        <div id="dicomDiv" style="z-index:40;position: absolute;pointer-events: none;"><canvas
+          id="dicomCanvas"></canvas></div>
 </body>
 
 </html>

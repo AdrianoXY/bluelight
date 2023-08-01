@@ -296,7 +296,6 @@ function html_onload() {
         .getContext("2d")
         .clearRect(0, 0, GetViewport(i).imageWidth, GetViewport(i).imageHeight);
     for (var i = 0; i < Viewport_Total; i++) displayMark(i);
-    console.log(Viewport_Total);
     changeMarkImg();
   };
 
