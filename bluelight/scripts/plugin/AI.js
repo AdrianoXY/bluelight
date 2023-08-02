@@ -139,11 +139,8 @@ async function blob(streamsData) {
   try {
     resetViewport();
     var arrayBuffer = new Uint8Array(streamsData).buffer;
-    console.log(arrayBuffer);
     var blob = new Blob([arrayBuffer]);
-    console.log(blob);
     const url = URL.createObjectURL(blob);
-    console.log(url);
 
     await load(100);
 
