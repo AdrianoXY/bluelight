@@ -1,6 +1,11 @@
 var openAIModel = false;
 let aimodelname, Multiple;
+var yv3 = 0,
+  yv8 = 0;
 let aiInfoArray = [];
+
+axios.defaults.baseURL = "http://127.0.0.1:3002/api/aimodel/";
+
 function loadAIModel() {
   var span = document.createElement("SPAN");
   span.innerHTML = `<img class="AIModelimg" alt="AIModel" id="AIModel" src="../image/icon/black/Model_OFF.png" width="50" height="50">`;
@@ -29,6 +34,7 @@ function loadAIModel() {
         <option id="multi">Multiple</option>
         </select>
         <button id="runmodel">Run</button>
+        <button id="rerunmodel">Rerun</button>
         <div id="circle" style="border: 8px solid #f3f3f3;
         border-top: 8px solid #3498db;
         border-radius: 50%;
@@ -39,11 +45,27 @@ function loadAIModel() {
   getByid("page-header").appendChild(span);
   getByid("AIModeldiv").style.display = "none";
   getByid("circle").style.display = "none";
+  getByid("rerunmodel").style.display = "none";
 }
 loadAIModel();
 
+function Hidden() {
+  if (aimodelname == "Yolo3" && yv3 > 0) {
+    getByid("rerunmodel").style.display = "";
+  } else if (aimodelname == "Yolo3" && yv3 == 0) {
+    getByid("rerunmodel").style.display = "none";
+  }
+
+  if (aimodelname == "Yolo8" && yv8 > 0) {
+    getByid("rerunmodel").style.display = "";
+  } else if (aimodelname == "Yolo8" && yv8 == 0) {
+    getByid("rerunmodel").style.display = "none";
+  }
+}
+
 getByid("AIModelSelect").onchange = function (e) {
   aimodelname = e.target.value;
+  Hidden();
 };
 
 getByid("mulSelect").onchange = function (e) {
@@ -61,6 +83,12 @@ getByid("AIModel").onclick = function () {
 };
 
 getByid("runmodel").onclick = function () {
+  PatientMark = [];
+  for (var i = 0; i < Viewport_Total; i++) {
+    var sop = GetViewport(i).sop;
+    loadAndViewImage(getImgaeIdFromSop(sop), i);
+  }
+
   var StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID, data;
   getByid("circle").style.display = "";
   for (var i = 0; i < GetViewport().DicomTagsList.length; i++) {
@@ -83,6 +111,97 @@ getByid("runmodel").onclick = function () {
     var data = {
       studyInstanceUid: StudyInstanceUID,
       seriesInstanceUid: SeriesInstanceUID,
+    };
+  }
+
+  if (aimodelname == "Yolo3") {
+    axios
+      .post("yolov3", data)
+      .then(function (response) {
+        if (response.status == 200 && Multiple == "Single") {
+          getByid("circle").style.display = "none";
+          getByid("rerunmodel").style.display = "";
+          blob(response.data._streams[1].data);
+          yv3++;
+        } else if (response.status == 200 && Multiple == "Multiple") {
+          getByid("circle").style.display = "none";
+          getByid("rerunmodel").style.display = "";
+          var j = 0;
+          for (var i = 0; i < response.data._streams.length; i += 3) {
+            aiInfoArray[j] = response.data._streams[i + 1].data;
+            j++;
+          }
+          for (var i = 0; i < aiInfoArray.length; i++) {
+            blob(aiInfoArray[i]);
+          }
+          yv3++;
+        }
+      })
+      .catch(function (error) {
+        getByid("circle").style.display = "none";
+        console.error("請求失敗：", error);
+      });
+  } else if (aimodelname == "Yolo8") {
+    axios
+      .post("yolov8", data)
+      .then(function (response) {
+        if (response.status == 200 && Multiple == "Single") {
+          getByid("circle").style.display = "none";
+          getByid("rerunmodel").style.display = "";
+          blob(response.data._streams[1].data);
+          yv8++;
+        } else if (response.status == 200 && Multiple == "Multiple") {
+          getByid("circle").style.display = "none";
+          getByid("rerunmodel").style.display = "";
+          var j = 0;
+          for (var i = 0; i < response.data._streams.length; i += 3) {
+            aiInfoArray[j] = response.data._streams[i + 1].data;
+            j++;
+          }
+          for (var i = 0; i < aiInfoArray.length; i++) {
+            blob(aiInfoArray[i]);
+          }
+          yv8++;
+        }
+      })
+      .catch(function (error) {
+        getByid("circle").style.display = "none";
+        console.error("請求失敗：", error);
+      });
+  }
+};
+
+getByid("rerunmodel").onclick = function () {
+  PatientMark = [];
+  for (var i = 0; i < Viewport_Total; i++) {
+    var sop = GetViewport(i).sop;
+    loadAndViewImage(getImgaeIdFromSop(sop), i);
+  }
+
+  var StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID, data;
+  getByid("circle").style.display = "";
+  for (var i = 0; i < GetViewport().DicomTagsList.length; i++) {
+    if (GetViewport().DicomTagsList[i][1] == "StudyInstanceUID") {
+      StudyInstanceUID = GetViewport().DicomTagsList[i][2];
+    } else if (GetViewport().DicomTagsList[i][1] == "SeriesInstanceUID") {
+      SeriesInstanceUID = GetViewport().DicomTagsList[i][2];
+    } else if (GetViewport().DicomTagsList[i][1] == "SOPInstanceUID") {
+      SOPInstanceUID = GetViewport().DicomTagsList[i][2];
+    }
+  }
+
+  if (Multiple == "Single") {
+    data = {
+      studyInstanceUid: StudyInstanceUID,
+      seriesInstanceUid: SeriesInstanceUID,
+      sopInstanceUid: SOPInstanceUID,
+      reload: "true",
+    };
+  } else if (Multiple == "Multiple") {
+    var data = {
+      studyInstanceUid: StudyInstanceUID,
+      seriesInstanceUid: SeriesInstanceUID,
+      reload: "true",
     };
   }
 
