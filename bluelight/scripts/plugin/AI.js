@@ -207,7 +207,7 @@ getByid("rerunmodel").onclick = function () {
 
   if (aimodelname == "Yolo3") {
     axios
-      .post("http://127.0.0.1:3002/api/aimodel/yolov3", data)
+      .post("yolov3", data)
       .then(function (response) {
         if (response.status == 200 && Multiple == "Single") {
           getByid("circle").style.display = "none";
@@ -230,7 +230,7 @@ getByid("rerunmodel").onclick = function () {
       });
   } else if (aimodelname == "Yolo8") {
     axios
-      .post("http://127.0.0.1:3002/api/aimodel/yolov8", data)
+      .post("yolov8", data)
       .then(function (response) {
         if (response.status == 200 && Multiple == "Single") {
           getByid("circle").style.display = "none";
