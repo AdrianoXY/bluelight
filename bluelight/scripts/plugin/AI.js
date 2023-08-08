@@ -1,8 +1,10 @@
 var openAIModel = false;
-let aimodelname, Multiple;
 var yv3 = 0,
-  yv8 = 0;
+  yv8 = 0,
+  hf = 0;
+let aimodelname, Multiple;
 let aiInfoArray = [];
+let handReport = [];
 
 axios.defaults.baseURL = "http://127.0.0.1:3002/api/aimodel/";
 
@@ -26,6 +28,7 @@ function loadAIModel() {
         <option selected="selected"></option>
         <option id="AIModelYolo3">Yolo3</option>
         <option id="AIModelYolo8">Yolo8</option>
+        <option id="handFilter">handFilter</option>
         </select>
         <span style="color: white;" id="multiple">Multiple:</span>
         <Select id="mulSelect">
@@ -40,14 +43,33 @@ function loadAIModel() {
         border-radius: 50%;
         width: 12px;
         height: 12px;
-        animation: spin 2s linear infinite;"></div>
-      </div>`;
+        animation: spin 2s linear infinite;" />
+      </div>
+      `;
   getByid("page-header").appendChild(span);
   getByid("AIModeldiv").style.display = "none";
   getByid("circle").style.display = "none";
   getByid("rerunmodel").style.display = "none";
 }
 loadAIModel();
+
+function handFilterReport() {
+  var span = document.createElement("SPAN");
+  span.innerHTML = `
+  <div id="handFilterReport"
+    style="background-color:#30306044;float:right;display: none;flex-direction: column;position: absolute;left:130px;top:200px;z-index: 20;"
+    width="100">
+    <div style="background-color:#889292;">
+    <h4 color="white">AI Result</h4>
+      <font color="white">Report:</font><span id="Report"></span>
+      <br />
+      <font color="white">SOPInstanceUID:</font><span id="SOPInstanceUID"></span>
+      </div>
+  </div>`;
+  getByid("form-group").appendChild(span);
+  getByid("handFilterReport").style.display = "none";
+}
+handFilterReport();
 
 function Hidden() {
   if (aimodelname == "Yolo3" && yv3 > 0) {
@@ -61,198 +83,13 @@ function Hidden() {
   } else if (aimodelname == "Yolo8" && yv8 == 0) {
     getByid("rerunmodel").style.display = "none";
   }
+
+  if (aimodelname == "handleFilter" && hf > 0) {
+    getByid("rerunmodel").style.display = "";
+  } else if (aimodelname == "handleFilter" && hf == 0) {
+    getByid("rerunmodel").style.display = "none";
+  }
 }
-
-getByid("AIModelSelect").onchange = function (e) {
-  aimodelname = e.target.value;
-  Hidden();
-};
-
-getByid("mulSelect").onchange = function (e) {
-  Multiple = e.target.value;
-};
-
-getByid("AIModel").onclick = function () {
-  openAIModel = !openAIModel;
-  this.src = openAIModel
-    ? "../image/icon/black/Model_ON.png"
-    : "../image/icon/black/Model_OFF.png";
-  if (openAIModel == true) {
-    getByid("AIModeldiv").style.display = "";
-  } else getByid("AIModeldiv").style.display = "none";
-};
-
-getByid("runmodel").onclick = function () {
-  PatientMark = [];
-  for (var i = 0; i < Viewport_Total; i++) {
-    var sop = GetViewport(i).sop;
-    loadAndViewImage(getImgaeIdFromSop(sop), i);
-  }
-
-  var StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID, data;
-  getByid("circle").style.display = "";
-  for (var i = 0; i < GetViewport().DicomTagsList.length; i++) {
-    if (GetViewport().DicomTagsList[i][1] == "StudyInstanceUID") {
-      StudyInstanceUID = GetViewport().DicomTagsList[i][2];
-    } else if (GetViewport().DicomTagsList[i][1] == "SeriesInstanceUID") {
-      SeriesInstanceUID = GetViewport().DicomTagsList[i][2];
-    } else if (GetViewport().DicomTagsList[i][1] == "SOPInstanceUID") {
-      SOPInstanceUID = GetViewport().DicomTagsList[i][2];
-    }
-  }
-
-  if (Multiple == "Single") {
-    data = {
-      studyInstanceUid: StudyInstanceUID,
-      seriesInstanceUid: SeriesInstanceUID,
-      sopInstanceUid: SOPInstanceUID,
-    };
-  } else if (Multiple == "Multiple") {
-    var data = {
-      studyInstanceUid: StudyInstanceUID,
-      seriesInstanceUid: SeriesInstanceUID,
-    };
-  }
-
-  if (aimodelname == "Yolo3") {
-    axios
-      .post("yolov3", data)
-      .then(function (response) {
-        if (response.status == 200 && Multiple == "Single") {
-          getByid("circle").style.display = "none";
-          getByid("rerunmodel").style.display = "";
-          blob(response.data._streams[1].data);
-          yv3++;
-        } else if (response.status == 200 && Multiple == "Multiple") {
-          getByid("circle").style.display = "none";
-          getByid("rerunmodel").style.display = "";
-          var j = 0;
-          for (var i = 0; i < response.data._streams.length; i += 3) {
-            aiInfoArray[j] = response.data._streams[i + 1].data;
-            j++;
-          }
-          for (var i = 0; i < aiInfoArray.length; i++) {
-            blob(aiInfoArray[i]);
-          }
-          yv3++;
-        }
-      })
-      .catch(function (error) {
-        getByid("circle").style.display = "none";
-        console.error("請求失敗：", error);
-      });
-  } else if (aimodelname == "Yolo8") {
-    axios
-      .post("yolov8", data)
-      .then(function (response) {
-        if (response.status == 200 && Multiple == "Single") {
-          getByid("circle").style.display = "none";
-          getByid("rerunmodel").style.display = "";
-          blob(response.data._streams[1].data);
-          yv8++;
-        } else if (response.status == 200 && Multiple == "Multiple") {
-          getByid("circle").style.display = "none";
-          getByid("rerunmodel").style.display = "";
-          var j = 0;
-          for (var i = 0; i < response.data._streams.length; i += 3) {
-            aiInfoArray[j] = response.data._streams[i + 1].data;
-            j++;
-          }
-          for (var i = 0; i < aiInfoArray.length; i++) {
-            blob(aiInfoArray[i]);
-          }
-          yv8++;
-        }
-      })
-      .catch(function (error) {
-        getByid("circle").style.display = "none";
-        console.error("請求失敗：", error);
-      });
-  }
-};
-
-getByid("rerunmodel").onclick = function () {
-  PatientMark = [];
-  for (var i = 0; i < Viewport_Total; i++) {
-    var sop = GetViewport(i).sop;
-    loadAndViewImage(getImgaeIdFromSop(sop), i);
-  }
-
-  var StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID, data;
-  getByid("circle").style.display = "";
-  for (var i = 0; i < GetViewport().DicomTagsList.length; i++) {
-    if (GetViewport().DicomTagsList[i][1] == "StudyInstanceUID") {
-      StudyInstanceUID = GetViewport().DicomTagsList[i][2];
-    } else if (GetViewport().DicomTagsList[i][1] == "SeriesInstanceUID") {
-      SeriesInstanceUID = GetViewport().DicomTagsList[i][2];
-    } else if (GetViewport().DicomTagsList[i][1] == "SOPInstanceUID") {
-      SOPInstanceUID = GetViewport().DicomTagsList[i][2];
-    }
-  }
-
-  if (Multiple == "Single") {
-    data = {
-      studyInstanceUid: StudyInstanceUID,
-      seriesInstanceUid: SeriesInstanceUID,
-      sopInstanceUid: SOPInstanceUID,
-      reload: "true",
-    };
-  } else if (Multiple == "Multiple") {
-    var data = {
-      studyInstanceUid: StudyInstanceUID,
-      seriesInstanceUid: SeriesInstanceUID,
-      reload: "true",
-    };
-  }
-
-  if (aimodelname == "Yolo3") {
-    axios
-      .post("yolov3", data)
-      .then(function (response) {
-        if (response.status == 200 && Multiple == "Single") {
-          getByid("circle").style.display = "none";
-          blob(response.data._streams[1].data);
-        } else if (response.status == 200 && Multiple == "Multiple") {
-          getByid("circle").style.display = "none";
-          var j = 0;
-          for (var i = 0; i < response.data._streams.length; i += 3) {
-            aiInfoArray[j] = response.data._streams[i + 1].data;
-            j++;
-          }
-          for (var i = 0; i < aiInfoArray.length; i++) {
-            blob(aiInfoArray[i]);
-          }
-        }
-      })
-      .catch(function (error) {
-        getByid("circle").style.display = "none";
-        console.error("請求失敗：", error);
-      });
-  } else if (aimodelname == "Yolo8") {
-    axios
-      .post("yolov8", data)
-      .then(function (response) {
-        if (response.status == 200 && Multiple == "Single") {
-          getByid("circle").style.display = "none";
-          blob(response.data._streams[1].data);
-        } else if (response.status == 200 && Multiple == "Multiple") {
-          getByid("circle").style.display = "none";
-          var j = 0;
-          for (var i = 0; i < response.data._streams.length; i += 3) {
-            aiInfoArray[j] = response.data._streams[i + 1].data;
-            j++;
-          }
-          for (var i = 0; i < aiInfoArray.length; i++) {
-            blob(aiInfoArray[i]);
-          }
-        }
-      })
-      .catch(function (error) {
-        getByid("circle").style.display = "none";
-        console.error("請求失敗：", error);
-      });
-  }
-};
 
 async function blob(streamsData) {
   try {
@@ -280,3 +117,304 @@ async function blob(streamsData) {
 function load(time) {
   return new Promise((resolve) => setTimeout(resolve, time));
 }
+
+function handFilter(reportData) {
+  for (let i = 0; i < reportData.length; i++) {
+    var newData = {
+      SOPInstanceUID: reportData[i].SOPInstanceUID,
+      Report: reportData[i].report,
+    };
+
+    handReport.push(newData);
+  }
+
+  showhandFilterReport();
+}
+
+function showhandFilterReport() {
+  var SOPInstanceUID, Report;
+  for (var i = 0; i < GetViewport().DicomTagsList.length; i++) {
+    if (GetViewport().DicomTagsList[i][1] == "SOPInstanceUID") {
+      SOPInstanceUID = GetViewport().DicomTagsList[i][2];
+    }
+  }
+
+  for (var i = 0; i < handReport.length; i++) {
+    if (SOPInstanceUID == handReport[i].SOPInstanceUID) {
+      SOPInstanceUID = handReport[i].SOPInstanceUID;
+      Report = handReport[i].Report;
+    }
+  }
+  updateReport(SOPInstanceUID, Report);
+}
+
+function updateReport(SOPInstanceUID, Report) {
+  handFilterReport();
+
+  getByid("Report").textContent = Report;
+  getByid("SOPInstanceUID").textContent = SOPInstanceUID;
+  getByid("handFilterReport").style.display = "block";
+}
+
+function deleteMark() {
+  PatientMark = [];
+  for (var i = 0; i < Viewport_Total; i++) {
+    var sop = GetViewport(i).sop;
+    loadAndViewImage(getImgaeIdFromSop(sop), i);
+  }
+}
+
+getByid("AIModel").onclick = function () {
+  openAIModel = !openAIModel;
+  this.src = openAIModel
+    ? "../image/icon/black/Model_ON.png"
+    : "../image/icon/black/Model_OFF.png";
+  if (openAIModel == true) {
+    getByid("AIModeldiv").style.display = "";
+  } else {
+    getByid("AIModeldiv").style.display = "none";
+  }
+};
+
+getByid("AIModelSelect").onchange = function (e) {
+  aimodelname = e.target.value;
+  Hidden();
+};
+
+getByid("mulSelect").onchange = function (e) {
+  Multiple = e.target.value;
+};
+
+getByid("runmodel").onclick = function () {
+  var StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID, data;
+  handReport = [];
+  deleteMark();
+
+  getByid("circle").style.display = "";
+  getByid("handFilterReport").style.display = "none";
+
+  for (var i = 0; i < GetViewport().DicomTagsList.length; i++) {
+    if (GetViewport().DicomTagsList[i][1] == "StudyInstanceUID") {
+      StudyInstanceUID = GetViewport().DicomTagsList[i][2];
+    } else if (GetViewport().DicomTagsList[i][1] == "SeriesInstanceUID") {
+      SeriesInstanceUID = GetViewport().DicomTagsList[i][2];
+    } else if (GetViewport().DicomTagsList[i][1] == "SOPInstanceUID") {
+      SOPInstanceUID = GetViewport().DicomTagsList[i][2];
+    }
+  }
+
+  if (Multiple == "Single") {
+    data = {
+      studyInstanceUid: StudyInstanceUID,
+      seriesInstanceUid: SeriesInstanceUID,
+      sopInstanceUid: SOPInstanceUID,
+    };
+  } else if (Multiple == "Multiple") {
+    var data = {
+      studyInstanceUid: StudyInstanceUID,
+      seriesInstanceUid: SeriesInstanceUID,
+    };
+  }
+
+  if (aimodelname == "Yolo3") {
+    axios
+      .post("yolov3", data)
+      .then(function (response) {
+        if (response.status == 200 && Multiple == "Single") {
+          getByid("circle").style.display = "none";
+          getByid("rerunmodel").style.display = "";
+          blob(response.data._streams[1].data);
+          yv3++;
+        } else if (response.status == 200 && Multiple == "Multiple") {
+          getByid("circle").style.display = "none";
+          getByid("rerunmodel").style.display = "";
+          var j = 0;
+          for (var i = 0; i < response.data._streams.length; i += 3) {
+            aiInfoArray[j] = response.data._streams[i + 1].data;
+            j++;
+          }
+          for (var i = 0; i < aiInfoArray.length; i++) {
+            blob(aiInfoArray[i]);
+          }
+          yv3++;
+        }
+      })
+      .catch(function (error) {
+        getByid("circle").style.display = "none";
+        console.error("請求失敗：", error);
+      });
+  } else if (aimodelname == "Yolo8") {
+    axios
+      .post("yolov8", data)
+      .then(function (response) {
+        if (response.status == 200 && Multiple == "Single") {
+          getByid("circle").style.display = "none";
+          getByid("rerunmodel").style.display = "";
+          blob(response.data._streams[1].data);
+          yv8++;
+        } else if (response.status == 200 && Multiple == "Multiple") {
+          getByid("circle").style.display = "none";
+          getByid("rerunmodel").style.display = "";
+          var j = 0;
+          for (var i = 0; i < response.data._streams.length; i += 3) {
+            aiInfoArray[j] = response.data._streams[i + 1].data;
+            j++;
+          }
+          for (var i = 0; i < aiInfoArray.length; i++) {
+            blob(aiInfoArray[i]);
+          }
+          yv8++;
+        }
+      })
+      .catch(function (error) {
+        getByid("circle").style.display = "none";
+        console.error("請求失敗：", error);
+      });
+  } else if (aimodelname == "handFilter") {
+    axios
+      .post("handfilter", data)
+      .then(function (response) {
+        if (response.status == 200 && Multiple == "Single") {
+          getByid("circle").style.display = "none";
+          getByid("rerunmodel").style.display = "";
+          handFilter(response.data);
+          hf++;
+        } else if (response.status == 200 && Multiple == "Multiple") {
+          getByid("circle").style.display = "none";
+          getByid("rerunmodel").style.display = "";
+          handFilter(response.data);
+          hf++;
+        }
+      })
+      .catch(function (error) {
+        getByid("circle").style.display = "none";
+        console.error("請求失敗：", error);
+      });
+  }
+};
+
+getByid("rerunmodel").onclick = function () {
+  var StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID, data;
+  handReport = [];
+  deleteMark();
+
+  getByid("circle").style.display = "";
+  getByid("handFilterReport").style.display = "none";
+
+  for (var i = 0; i < GetViewport().DicomTagsList.length; i++) {
+    if (GetViewport().DicomTagsList[i][1] == "StudyInstanceUID") {
+      StudyInstanceUID = GetViewport().DicomTagsList[i][2];
+    } else if (GetViewport().DicomTagsList[i][1] == "SeriesInstanceUID") {
+      SeriesInstanceUID = GetViewport().DicomTagsList[i][2];
+    } else if (GetViewport().DicomTagsList[i][1] == "SOPInstanceUID") {
+      SOPInstanceUID = GetViewport().DicomTagsList[i][2];
+    }
+  }
+
+  if (Multiple == "Single") {
+    data = {
+      studyInstanceUid: StudyInstanceUID,
+      seriesInstanceUid: SeriesInstanceUID,
+      sopInstanceUid: SOPInstanceUID,
+      reload: "true",
+    };
+  } else if (Multiple == "Multiple") {
+    var data = {
+      studyInstanceUid: StudyInstanceUID,
+      seriesInstanceUid: SeriesInstanceUID,
+      reload: "true",
+    };
+  }
+
+  if (aimodelname == "Yolo3") {
+    deleteMark();
+    axios
+      .post("yolov3", data)
+      .then(function (response) {
+        if (response.status == 200 && Multiple == "Single") {
+          getByid("circle").style.display = "none";
+          blob(response.data._streams[1].data);
+        } else if (response.status == 200 && Multiple == "Multiple") {
+          getByid("circle").style.display = "none";
+          var j = 0;
+          for (var i = 0; i < response.data._streams.length; i += 3) {
+            aiInfoArray[j] = response.data._streams[i + 1].data;
+            j++;
+          }
+          for (var i = 0; i < aiInfoArray.length; i++) {
+            blob(aiInfoArray[i]);
+          }
+        }
+      })
+      .catch(function (error) {
+        getByid("circle").style.display = "none";
+        console.error("請求失敗：", error);
+      });
+  } else if (aimodelname == "Yolo8") {
+    deleteMark();
+    axios
+      .post("yolov8", data)
+      .then(function (response) {
+        if (response.status == 200 && Multiple == "Single") {
+          getByid("circle").style.display = "none";
+          blob(response.data._streams[1].data);
+        } else if (response.status == 200 && Multiple == "Multiple") {
+          getByid("circle").style.display = "none";
+          var j = 0;
+          for (var i = 0; i < response.data._streams.length; i += 3) {
+            aiInfoArray[j] = response.data._streams[i + 1].data;
+            j++;
+          }
+          for (var i = 0; i < aiInfoArray.length; i++) {
+            blob(aiInfoArray[i]);
+          }
+        }
+      })
+      .catch(function (error) {
+        getByid("circle").style.display = "none";
+        console.error("請求失敗：", error);
+      });
+  } else if (aimodelname == "handFilter") {
+    handReport = [];
+    axios
+      .post("handfilter", data)
+      .then(function (response) {
+        if (response.status == 200 && Multiple == "Single") {
+          getByid("circle").style.display = "none";
+          getByid("rerunmodel").style.display = "";
+          handFilter(response.data);
+          hf++;
+        } else if (response.status == 200 && Multiple == "Multiple") {
+          getByid("circle").style.display = "none";
+          getByid("rerunmodel").style.display = "";
+          handFilter(response.data);
+          hf++;
+        }
+      })
+      .catch(function (error) {
+        getByid("circle").style.display = "none";
+        console.error("請求失敗：", error);
+      });
+  }
+};
+
+window.addEventListener("wheel", () => {
+  if (!handReport || handReport.length === 0) {
+    return;
+  }
+
+  var SOPInstanceUID, Report;
+  for (var i = 0; i < GetViewport().DicomTagsList.length; i++) {
+    if (GetViewport().DicomTagsList[i][1] == "SOPInstanceUID") {
+      SOPInstanceUID = GetViewport().DicomTagsList[i][2];
+    }
+  }
+
+  for (var i = 0; i < handReport.length; i++) {
+    if (SOPInstanceUID == handReport[i].SOPInstanceUID) {
+      SOPInstanceUID = handReport[i].SOPInstanceUID;
+      Report = handReport[i].Report;
+    }
+  }
+  updateReport(SOPInstanceUID, Report);
+});
