@@ -2,11 +2,12 @@ var openAIModel = false;
 var yv3 = 0,
   yv8 = 0,
   hf = 0;
+sm5 = 0;
 let aimodelname, Multiple;
 let aiInfoArray = [];
 let handReport = [];
 
-axios.defaults.baseURL = "http://127.0.0.1:3002/api/aimodel/";
+axios.defaults.baseURL = "http://192.168.50.202:3002/api/aimodel/";
 
 function loadAIModel() {
   var span = document.createElement("SPAN");
@@ -29,6 +30,7 @@ function loadAIModel() {
         <option id="AIModelYolo3">Yolo3</option>
         <option id="AIModelYolo8">Yolo8</option>
         <option id="handFilter">handFilter</option>
+        <option id="Smart5">SMART5</option>
         </select>
         <span style="color: white;" id="multiple">Multiple:</span>
         <Select id="mulSelect">
@@ -88,6 +90,22 @@ function Hidden() {
     getByid("rerunmodel").style.display = "";
   } else if (aimodelname == "handleFilter" && hf == 0) {
     getByid("rerunmodel").style.display = "none";
+  }
+
+  if (aimodelname == "SMART5" && sm5 > 0) {
+    getByid("rerunmodel").style.display = "";
+  } else if (aimodelname == "SMART5" && sm5 == 0) {
+    getByid("rerunmodel").style.display = "none";
+  }
+
+  if (aimodelname == "SMART5") {
+    getByid("mulSelect").style.display = "none";
+    getByid("multiple").style.display = "none";
+    getByid("mulSelect").value = "";
+  } else if (aimodelname != "SMART5") {
+    getByid("mulSelect").style.display = "";
+    getByid("multiple").style.display = "";
+    getByid("mulSelect").value = "";
   }
 }
 
@@ -203,7 +221,11 @@ getByid("runmodel").onclick = function () {
     }
   }
 
-  if (Multiple == "Single") {
+  if (aimodelname == "SMART5") {
+    data = {
+      studyInstanceUid: StudyInstanceUID,
+    };
+  } else if (Multiple == "Single") {
     data = {
       studyInstanceUid: StudyInstanceUID,
       seriesInstanceUid: SeriesInstanceUID,
@@ -285,6 +307,19 @@ getByid("runmodel").onclick = function () {
           handFilter(response.data);
           hf++;
         }
+      })
+      .catch(function (error) {
+        getByid("circle").style.display = "none";
+        console.error("請求失敗：", error);
+      });
+  } else if (aimodelname == "SMART5") {
+    axios
+      .post("smart5", data)
+      .then(function (response) {
+        getByid("circle").style.display = "none";
+        getByid("rerunmodel").style.display = "";
+        blob(response.data._streams[1].data);
+        sm5++;
       })
       .catch(function (error) {
         getByid("circle").style.display = "none";
@@ -390,6 +425,19 @@ getByid("rerunmodel").onclick = function () {
           handFilter(response.data);
           hf++;
         }
+      })
+      .catch(function (error) {
+        getByid("circle").style.display = "none";
+        console.error("請求失敗：", error);
+      });
+  } else if (aimodelname == "SMART5") {
+    axios
+      .post("smart5", data)
+      .then(function (response) {
+        getByid("circle").style.display = "none";
+        getByid("rerunmodel").style.display = "";
+        blob(response.data._streams[1].data);
+        sm5++;
       })
       .catch(function (error) {
         getByid("circle").style.display = "none";
