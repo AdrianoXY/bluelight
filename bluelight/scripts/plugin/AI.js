@@ -346,7 +346,11 @@ getByid("rerunmodel").onclick = function () {
     }
   }
 
-  if (Multiple == "Single") {
+  if (aimodelname == "SMART5") {
+    data = {
+      studyInstanceUid: StudyInstanceUID,
+    };
+  } else if (Multiple == "Single") {
     data = {
       studyInstanceUid: StudyInstanceUID,
       seriesInstanceUid: SeriesInstanceUID,
