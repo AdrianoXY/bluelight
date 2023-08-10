@@ -1,7 +1,10 @@
 var openAIModel = false;
-var yv3 = 0,
-  yv8 = 0,
-  hf = 0;
+var yv3s = 0,
+  yv3m = 0;
+yv8s = 0;
+yv8m = 0;
+hfs = 0;
+hfm = 0;
 sm5 = 0;
 let aimodelname, Multiple;
 let aiInfoArray = [];
@@ -85,21 +88,43 @@ function handFilterReport() {
 handFilterReport();
 
 function Hidden() {
-  if (aimodelname == "Yolo3" && yv3 > 0) {
+  if (aimodelname == "Yolo3" && Multiple == "Single" && yv3s > 0) {
     getByid("rerunmodel").style.display = "";
-  } else if (aimodelname == "Yolo3" && yv3 == 0) {
+  } else if (aimodelname == "Yolo3" && Multiple == "Single" && yv3s == 0) {
     getByid("rerunmodel").style.display = "none";
   }
 
-  if (aimodelname == "Yolo8" && yv8 > 0) {
+  if (aimodelname == "Yolo3" && Multiple == "Multiple" && yv3m > 0) {
     getByid("rerunmodel").style.display = "";
-  } else if (aimodelname == "Yolo8" && yv8 == 0) {
+  } else if (aimodelname == "Yolo3" && Multiple == "Multiple" && yv3m == 0) {
     getByid("rerunmodel").style.display = "none";
   }
 
-  if (aimodelname == "handleFilter" && hf > 0) {
+  if (aimodelname == "Yolo8" && Multiple == "Single" && yv8s > 0) {
     getByid("rerunmodel").style.display = "";
-  } else if (aimodelname == "handleFilter" && hf == 0) {
+  } else if (aimodelname == "Yolo8" && Multiple == "Single" && yv8s == 0) {
+    getByid("rerunmodel").style.display = "none";
+  }
+
+  if (aimodelname == "Yolo8" && Multiple == "Multiple" && yv8m > 0) {
+    getByid("rerunmodel").style.display = "";
+  } else if (aimodelname == "Yolo8" && Multiple == "Multiple" && yv8m == 0) {
+    getByid("rerunmodel").style.display = "none";
+  }
+
+  if (aimodelname == "handFilter" && Multiple == "Single" && hfs > 0) {
+    getByid("rerunmodel").style.display = "";
+  } else if (aimodelname == "handFilter" && Multiple == "Single" && hfs == 0) {
+    getByid("rerunmodel").style.display = "none";
+  }
+
+  if (aimodelname == "handFilter" && Multiple == "Multiple" && hfm > 0) {
+    getByid("rerunmodel").style.display = "";
+  } else if (
+    aimodelname == "handFilter" &&
+    Multiple == "Multiple" &&
+    hfm == 0
+  ) {
     getByid("rerunmodel").style.display = "none";
   }
 
@@ -116,7 +141,6 @@ function Hidden() {
   } else if (aimodelname != "SMART5") {
     getByid("mulSelect").style.display = "";
     getByid("multiple").style.display = "";
-    getByid("mulSelect").value = "";
   }
 }
 
@@ -231,6 +255,7 @@ getByid("AIModelSelect").onchange = function (e) {
 
 getByid("mulSelect").onchange = function (e) {
   Multiple = e.target.value;
+  Hidden();
 };
 
 getByid("runmodel").onclick = function () {
@@ -284,7 +309,7 @@ getByid("runmodel").onclick = function () {
           getByid("circle").style.display = "none";
           getByid("rerunmodel").style.display = "";
           blob(response.data._streams[1].data);
-          yv3++;
+          yv3s++;
         } else if (response.status == 200 && Multiple == "Multiple") {
           getByid("circle").style.display = "none";
           getByid("rerunmodel").style.display = "";
@@ -296,7 +321,7 @@ getByid("runmodel").onclick = function () {
           for (var i = 0; i < aiInfoArray.length; i++) {
             blob(aiInfoArray[i]);
           }
-          yv3++;
+          yv3m++;
         }
       })
       .catch(function (error) {
@@ -311,7 +336,7 @@ getByid("runmodel").onclick = function () {
           getByid("circle").style.display = "none";
           getByid("rerunmodel").style.display = "";
           blob(response.data._streams[1].data);
-          yv8++;
+          yv8s++;
         } else if (response.status == 200 && Multiple == "Multiple") {
           getByid("circle").style.display = "none";
           getByid("rerunmodel").style.display = "";
@@ -323,7 +348,7 @@ getByid("runmodel").onclick = function () {
           for (var i = 0; i < aiInfoArray.length; i++) {
             blob(aiInfoArray[i]);
           }
-          yv8++;
+          yv8m++;
         }
       })
       .catch(function (error) {
@@ -338,12 +363,12 @@ getByid("runmodel").onclick = function () {
           getByid("circle").style.display = "none";
           getByid("rerunmodel").style.display = "";
           handFilter(response.data);
-          hf++;
+          hfs++;
         } else if (response.status == 200 && Multiple == "Multiple") {
           getByid("circle").style.display = "none";
           getByid("rerunmodel").style.display = "";
           handFilter(response.data);
-          hf++;
+          hfm++;
         }
       })
       .catch(function (error) {
@@ -461,12 +486,10 @@ getByid("rerunmodel").onclick = function () {
           getByid("circle").style.display = "none";
           getByid("rerunmodel").style.display = "";
           handFilter(response.data);
-          hf++;
         } else if (response.status == 200 && Multiple == "Multiple") {
           getByid("circle").style.display = "none";
           getByid("rerunmodel").style.display = "";
           handFilter(response.data);
-          hf++;
         }
       })
       .catch(function (error) {
@@ -480,7 +503,6 @@ getByid("rerunmodel").onclick = function () {
         getByid("circle").style.display = "none";
         getByid("rerunmodel").style.display = "";
         blob(response.data._streams[1].data);
-        sm5++;
       })
       .catch(function (error) {
         getByid("circle").style.display = "none";
