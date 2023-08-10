@@ -24,11 +24,18 @@ function loadAIModel() {
 
   var span = document.createElement("SPAN");
   span.innerHTML = `<div id="AIModeldiv" style="background-color:#30306044;">
+        <span style="color: white;" id="bodypartSpan">Body Part:</span>
+        <select id="Bodypart">
+        <option selected="selected"></option>
+        <option id="hand">Hand</option>
+        <option id="brain">Brain</option>
+        <option id="lung">lung</option>
+        </select>
         <span style="color: white;" id="AIModelSpan">AI Model:</span>
         <select id="AIModelSelect">
         <option selected="selected"></option>
-        <option id="AIModelYolo3">Yolo3</option>
-        <option id="AIModelYolo8">Yolo8</option>
+        <option id="Yolo3">Yolo3</option>
+        <option id="Yolo8">Yolo8</option>
         <option id="handFilter">handFilter</option>
         <option id="Smart5">SMART5</option>
         </select>
@@ -50,6 +57,10 @@ function loadAIModel() {
       `;
   getByid("page-header").appendChild(span);
   getByid("AIModeldiv").style.display = "none";
+  getByid("Yolo3").style.display = "none";
+  getByid("Yolo8").style.display = "none";
+  getByid("handFilter").style.display = "none";
+  getByid("Smart5").style.display = "none";
   getByid("circle").style.display = "none";
   getByid("rerunmodel").style.display = "none";
 }
@@ -181,6 +192,25 @@ function deleteMark() {
     loadAndViewImage(getImgaeIdFromSop(sop), i);
   }
 }
+
+getByid("Bodypart").onchange = function () {
+  if (getByid("Bodypart").value == "Hand") {
+    getByid("handFilter").style.display = "";
+    getByid("Yolo3").style.display = "none";
+    getByid("Yolo8").style.display = "none";
+    getByid("Smart5").style.display = "none";
+  } else if (getByid("Bodypart").value == "Brain") {
+    getByid("Smart5").style.display = "";
+    getByid("Yolo3").style.display = "none";
+    getByid("Yolo8").style.display = "none";
+    getByid("handFilter").style.display = "none";
+  } else if (getByid("Bodypart").value == "lung") {
+    getByid("Yolo3").style.display = "";
+    getByid("Yolo8").style.display = "";
+    getByid("handFilter").style.display = "none";
+    getByid("Smart5").style.display = "none";
+  }
+};
 
 getByid("AIModel").onclick = function () {
   openAIModel = !openAIModel;
