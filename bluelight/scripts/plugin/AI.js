@@ -349,6 +349,7 @@ getByid("rerunmodel").onclick = function () {
   if (aimodelname == "SMART5") {
     data = {
       studyInstanceUid: StudyInstanceUID,
+      reload: "true",
     };
   } else if (Multiple == "Single") {
     data = {
