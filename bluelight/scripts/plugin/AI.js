@@ -208,6 +208,14 @@ getByid("runmodel").onclick = function () {
   handReport = [];
   deleteMark();
 
+  if (
+    getByid("AIModelSelect").value == "" ||
+    (getByid("mulSelect").value == "" &&
+      getByid("AIModelSelect").value != "SMART5")
+  ) {
+    return;
+  }
+
   getByid("circle").style.display = "";
   getByid("handFilterReport").style.display = "none";
 
