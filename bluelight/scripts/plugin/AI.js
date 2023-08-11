@@ -202,11 +202,14 @@ function showhandFilterReport() {
 }
 
 function updateReport(SOPInstanceUID, Report) {
-  handFilterReport();
-
-  getByid("Report").textContent = Report;
-  getByid("SOPInstanceUID").textContent = SOPInstanceUID;
-  getByid("handFilterReport").style.display = "block";
+  if (Report) {
+    handFilterReport();
+    getByid("Report").textContent = Report;
+    getByid("SOPInstanceUID").textContent = SOPInstanceUID;
+    getByid("handFilterReport").style.display = "block";
+  } else {
+    getByid("handFilterReport").style.display = "none";
+  }
 }
 
 function deleteMark() {
