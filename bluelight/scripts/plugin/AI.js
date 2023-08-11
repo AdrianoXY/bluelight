@@ -79,7 +79,6 @@ function handFilterReport() {
     <h4 color="white">AI Result</h4>
       <font color="white">Report:</font><span id="Report"></span>
       <br />
-      <font color="white">SOPInstanceUID:</font><span id="SOPInstanceUID"></span>
       </div>
   </div>`;
   getByid("form-group").appendChild(span);
@@ -194,7 +193,6 @@ function showhandFilterReport() {
 
   for (var i = 0; i < handReport.length; i++) {
     if (SOPInstanceUID == handReport[i].SOPInstanceUID) {
-      SOPInstanceUID = handReport[i].SOPInstanceUID;
       Report = handReport[i].Report;
     }
   }
@@ -205,7 +203,6 @@ function updateReport(SOPInstanceUID, Report) {
   if (Report) {
     handFilterReport();
     getByid("Report").textContent = Report;
-    getByid("SOPInstanceUID").textContent = SOPInstanceUID;
     getByid("handFilterReport").style.display = "block";
   } else {
     getByid("handFilterReport").style.display = "none";
@@ -531,7 +528,6 @@ window.addEventListener("wheel", () => {
 
   for (var i = 0; i < handReport.length; i++) {
     if (SOPInstanceUID == handReport[i].SOPInstanceUID) {
-      SOPInstanceUID = handReport[i].SOPInstanceUID;
       Report = handReport[i].Report;
     }
   }
