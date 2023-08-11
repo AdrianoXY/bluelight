@@ -226,16 +226,19 @@ getByid("Bodypart").onchange = function () {
     getByid("Yolo3").style.display = "none";
     getByid("Yolo8").style.display = "none";
     getByid("Smart5").style.display = "none";
+    getByid("AIModelSelect").value = "";
   } else if (getByid("Bodypart").value == "Brain") {
     getByid("Smart5").style.display = "";
     getByid("Yolo3").style.display = "none";
     getByid("Yolo8").style.display = "none";
+    getByid("AIModelSelect").value = "";
     getByid("handFilter").style.display = "none";
   } else if (getByid("Bodypart").value == "lung") {
     getByid("Yolo3").style.display = "";
     getByid("Yolo8").style.display = "";
     getByid("handFilter").style.display = "none";
     getByid("Smart5").style.display = "none";
+    getByid("AIModelSelect").value = "";
   }
 };
 
