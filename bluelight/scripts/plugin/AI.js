@@ -200,7 +200,14 @@ function showhandFilterReport() {
 }
 
 function updateReport(SOPInstanceUID, Report) {
-  if (Report) {
+  var ViewportSOPUID;
+  for (var i = 0; i < GetViewport().DicomTagsList.length; i++) {
+    if (GetViewport().DicomTagsList[i][1] == "SOPInstanceUID") {
+      ViewportSOPUID = GetViewport().DicomTagsList[i][2];
+    }
+  }
+
+  if (Report && ViewportSOPUID == SOPInstanceUID) {
     handFilterReport();
     getByid("Report").textContent = Report;
     getByid("handFilterReport").style.display = "block";
@@ -359,6 +366,7 @@ getByid("runmodel").onclick = function () {
         console.error("請求失敗：", error);
       });
   } else if (aimodelname == "handFilter") {
+    console.log("1");
     axios
       .post("handfilter", data)
       .then(function (response) {
@@ -515,6 +523,26 @@ getByid("rerunmodel").onclick = function () {
 };
 
 window.addEventListener("wheel", () => {
+  if (!handReport || handReport.length === 0) {
+    return;
+  }
+
+  var SOPInstanceUID, Report;
+  for (var i = 0; i < GetViewport().DicomTagsList.length; i++) {
+    if (GetViewport().DicomTagsList[i][1] == "SOPInstanceUID") {
+      SOPInstanceUID = GetViewport().DicomTagsList[i][2];
+    }
+  }
+
+  for (var i = 0; i < handReport.length; i++) {
+    if (SOPInstanceUID == handReport[i].SOPInstanceUID) {
+      Report = handReport[i].Report;
+    }
+  }
+  updateReport(SOPInstanceUID, Report);
+});
+
+window.addEventListener("click", () => {
   if (!handReport || handReport.length === 0) {
     return;
   }
