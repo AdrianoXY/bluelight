@@ -245,7 +245,7 @@ getByid("Bodypart").onchange = function () {
     getByid("handFilter").style.display = "";
     getByid("Yolo3").style.display = "none";
     getByid("Yolo8").style.display = "none";
-    getByid("Yolo4").style.display = "none";
+    getByid("Yolo4").style.display = "";
     getByid("Smart5").style.display = "none";
     getByid("AIModelSelect").value = "";
   } else if (getByid("Bodypart").value == "Brain") {
@@ -258,7 +258,7 @@ getByid("Bodypart").onchange = function () {
   } else if (getByid("Bodypart").value == "lung") {
     getByid("Yolo3").style.display = "";
     getByid("Yolo8").style.display = "";
-    getByid("Yolo4").style.display = "";
+    getByid("Yolo4").style.display = "none";
     getByid("handFilter").style.display = "none";
     getByid("Smart5").style.display = "none";
     getByid("AIModelSelect").value = "";
