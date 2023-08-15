@@ -1,6 +1,8 @@
 var openAIModel = false;
 var yv3s = 0,
   yv3m = 0;
+yv4s = 0;
+yv4m = 0;
 yv8s = 0;
 yv8m = 0;
 hfs = 0;
@@ -38,6 +40,7 @@ function loadAIModel() {
         <select id="AIModelSelect">
         <option selected="selected"></option>
         <option id="Yolo3">Yolo3</option>
+        <option id="Yolo4">Yolo4</option>
         <option id="Yolo8">Yolo8</option>
         <option id="handFilter">handFilter</option>
         <option id="Smart5">SMART5</option>
@@ -62,6 +65,7 @@ function loadAIModel() {
   getByid("AIModeldiv").style.display = "none";
   getByid("Yolo3").style.display = "none";
   getByid("Yolo8").style.display = "none";
+  getByid("Yolo4").style.display = "none";
   getByid("handFilter").style.display = "none";
   getByid("Smart5").style.display = "none";
   getByid("circle").style.display = "none";
@@ -96,6 +100,18 @@ function Hidden() {
   if (aimodelname == "Yolo3" && Multiple == "Multiple" && yv3m > 0) {
     getByid("rerunmodel").style.display = "";
   } else if (aimodelname == "Yolo3" && Multiple == "Multiple" && yv3m == 0) {
+    getByid("rerunmodel").style.display = "none";
+  }
+
+  if (aimodelname == "Yolo4" && Multiple == "Single" && yv4s > 0) {
+    getByid("rerunmodel").style.display = "";
+  } else if (aimodelname == "Yolo4" && Multiple == "Single" && yv4s == 0) {
+    getByid("rerunmodel").style.display = "none";
+  }
+
+  if (aimodelname == "Yolo8" && Multiple == "Multiple" && yv8m > 0) {
+    getByid("rerunmodel").style.display = "";
+  } else if (aimodelname == "Yolo8" && Multiple == "Multiple" && yv8m == 0) {
     getByid("rerunmodel").style.display = "none";
   }
 
@@ -229,17 +245,20 @@ getByid("Bodypart").onchange = function () {
     getByid("handFilter").style.display = "";
     getByid("Yolo3").style.display = "none";
     getByid("Yolo8").style.display = "none";
+    getByid("Yolo4").style.display = "none";
     getByid("Smart5").style.display = "none";
     getByid("AIModelSelect").value = "";
   } else if (getByid("Bodypart").value == "Brain") {
     getByid("Smart5").style.display = "";
     getByid("Yolo3").style.display = "none";
     getByid("Yolo8").style.display = "none";
+    getByid("Yolo4").style.display = "none";
     getByid("AIModelSelect").value = "";
     getByid("handFilter").style.display = "none";
   } else if (getByid("Bodypart").value == "lung") {
     getByid("Yolo3").style.display = "";
     getByid("Yolo8").style.display = "";
+    getByid("Yolo4").style.display = "";
     getByid("handFilter").style.display = "none";
     getByid("Smart5").style.display = "none";
     getByid("AIModelSelect").value = "";
@@ -365,6 +384,33 @@ getByid("runmodel").onclick = function () {
         getByid("circle").style.display = "none";
         console.error("請求失敗：", error);
       });
+  } else if (aimodelname == "Yolo4") {
+    axios
+      .post("yolov4", data)
+      .then(function (response) {
+        if (response.status == 200 && Multiple == "Single") {
+          getByid("circle").style.display = "none";
+          getByid("rerunmodel").style.display = "";
+          blob(response.data._streams[1].data);
+          yv4s++;
+        } else if (response.status == 200 && Multiple == "Multiple") {
+          getByid("circle").style.display = "none";
+          getByid("rerunmodel").style.display = "";
+          var j = 0;
+          for (var i = 0; i < response.data._streams.length; i += 3) {
+            aiInfoArray[j] = response.data._streams[i + 1].data;
+            j++;
+          }
+          for (var i = 0; i < aiInfoArray.length; i++) {
+            blob(aiInfoArray[i]);
+          }
+          yv4m++;
+        }
+      })
+      .catch(function (error) {
+        getByid("circle").style.display = "none";
+        console.error("請求失敗：", error);
+      });
   } else if (aimodelname == "handFilter") {
     console.log("1");
     axios
@@ -468,6 +514,30 @@ getByid("rerunmodel").onclick = function () {
     deleteMark();
     axios
       .post("yolov8", data)
+      .then(function (response) {
+        if (response.status == 200 && Multiple == "Single") {
+          getByid("circle").style.display = "none";
+          blob(response.data._streams[1].data);
+        } else if (response.status == 200 && Multiple == "Multiple") {
+          getByid("circle").style.display = "none";
+          var j = 0;
+          for (var i = 0; i < response.data._streams.length; i += 3) {
+            aiInfoArray[j] = response.data._streams[i + 1].data;
+            j++;
+          }
+          for (var i = 0; i < aiInfoArray.length; i++) {
+            blob(aiInfoArray[i]);
+          }
+        }
+      })
+      .catch(function (error) {
+        getByid("circle").style.display = "none";
+        console.error("請求失敗：", error);
+      });
+  } else if (aimodelname == "Yolo4") {
+    deleteMark();
+    axios
+      .post("yolov4", data)
       .then(function (response) {
         if (response.status == 200 && Multiple == "Single") {
           getByid("circle").style.display = "none";
