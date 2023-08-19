@@ -12,7 +12,7 @@ let aimodelname, Multiple;
 let aiInfoArray = [];
 let handReport = [];
 
-axios.defaults.baseURL = "http://192.168.20.133/ghlBackend/ghl/api/aimodel";
+axios.defaults.baseURL = "http://192.168.0.146:3002/api/aimodel";
 
 function loadAIModel() {
   var span = document.createElement("SPAN");
