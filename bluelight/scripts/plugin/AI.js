@@ -12,7 +12,8 @@ let aimodelname, Multiple;
 let aiInfoArray = [];
 let handReport = [];
 
-axios.defaults.baseURL = "http://192.168.0.146:3002/api/aimodel";
+// axios.defaults.baseURL = "http://192.168.20.133/ghlBackend/ghl/api/aimodel";
+axios.defaults.baseURL = "http://192.168.50.202:3002/api/aimodel";
 
 function loadAIModel() {
   var span = document.createElement("SPAN");
@@ -53,6 +54,7 @@ function loadAIModel() {
         </select>
         <button id="runmodel">Run</button>
         <button id="rerunmodel">Rerun</button>
+        <span style="color: red;" id="errorMessage"></span>
         <div id="circle" style="border: 8px solid #f3f3f3;
         border-top: 8px solid #3498db;
         border-radius: 50%;
@@ -70,6 +72,7 @@ function loadAIModel() {
   getByid("Smart5").style.display = "none";
   getByid("circle").style.display = "none";
   getByid("rerunmodel").style.display = "none";
+  getByid("errorMessage").style.display = "none";
 }
 loadAIModel();
 
@@ -241,6 +244,7 @@ function deleteMark() {
 }
 
 getByid("Bodypart").onchange = function () {
+  getByid("errorMessage").innerHTML = "";
   if (getByid("Bodypart").value == "Hand") {
     getByid("handFilter").style.display = "";
     getByid("Yolo3").style.display = "none";
@@ -279,11 +283,13 @@ getByid("AIModel").onclick = function () {
 
 getByid("AIModelSelect").onchange = function (e) {
   aimodelname = e.target.value;
+  getByid("errorMessage").innerHTML = "";
   Hidden();
 };
 
 getByid("mulSelect").onchange = function (e) {
   Multiple = e.target.value;
+  getByid("errorMessage").innerHTML = "";
   Hidden();
 };
 
@@ -291,6 +297,8 @@ getByid("runmodel").onclick = function () {
   var StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID, data;
   handReport = [];
   deleteMark();
+  getByid("errorMessage").style.display = "";
+  getByid("errorMessage").innerHTML = "";
 
   if (
     getByid("AIModelSelect").value == "" ||
@@ -355,6 +363,7 @@ getByid("runmodel").onclick = function () {
       })
       .catch(function (error) {
         getByid("circle").style.display = "none";
+        getByid("errorMessage").innerHTML = "No such file";
         console.error("請求失敗：", error);
       });
   } else if (aimodelname == "Yolo8") {
@@ -382,6 +391,7 @@ getByid("runmodel").onclick = function () {
       })
       .catch(function (error) {
         getByid("circle").style.display = "none";
+        getByid("errorMessage").innerHTML = "No such file";
         console.error("請求失敗：", error);
       });
   } else if (aimodelname == "Yolo4") {
@@ -409,6 +419,7 @@ getByid("runmodel").onclick = function () {
       })
       .catch(function (error) {
         getByid("circle").style.display = "none";
+        getByid("errorMessage").innerHTML = "No such file";
         console.error("請求失敗：", error);
       });
   } else if (aimodelname == "handFilter") {
@@ -430,6 +441,7 @@ getByid("runmodel").onclick = function () {
       })
       .catch(function (error) {
         getByid("circle").style.display = "none";
+        getByid("errorMessage").innerHTML = "No such file";
         console.error("請求失敗：", error);
       });
   } else if (aimodelname == "SMART5") {
@@ -443,6 +455,7 @@ getByid("runmodel").onclick = function () {
       })
       .catch(function (error) {
         getByid("circle").style.display = "none";
+        getByid("errorMessage").innerHTML = "No such file";
         console.error("請求失敗：", error);
       });
   }
@@ -452,6 +465,9 @@ getByid("rerunmodel").onclick = function () {
   var StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID, data;
   handReport = [];
   deleteMark();
+
+  getByid("errorMessage").style.display = "";
+  getByid("errorMessage").innerHTML = "";
 
   getByid("circle").style.display = "";
   getByid("handFilterReport").style.display = "none";
@@ -508,6 +524,7 @@ getByid("rerunmodel").onclick = function () {
       })
       .catch(function (error) {
         getByid("circle").style.display = "none";
+        getByid("errorMessage").style.display = "No such file";
         console.error("請求失敗：", error);
       });
   } else if (aimodelname == "Yolo8") {
@@ -532,6 +549,7 @@ getByid("rerunmodel").onclick = function () {
       })
       .catch(function (error) {
         getByid("circle").style.display = "none";
+        getByid("errorMessage").style.display = "No such file";
         console.error("請求失敗：", error);
       });
   } else if (aimodelname == "Yolo4") {
@@ -556,6 +574,7 @@ getByid("rerunmodel").onclick = function () {
       })
       .catch(function (error) {
         getByid("circle").style.display = "none";
+        getByid("errorMessage").style.display = "No such file";
         console.error("請求失敗：", error);
       });
   } else if (aimodelname == "handFilter") {
@@ -575,6 +594,7 @@ getByid("rerunmodel").onclick = function () {
       })
       .catch(function (error) {
         getByid("circle").style.display = "none";
+        getByid("errorMessage").style.display = "No such file";
         console.error("請求失敗：", error);
       });
   } else if (aimodelname == "SMART5") {
@@ -587,6 +607,7 @@ getByid("rerunmodel").onclick = function () {
       })
       .catch(function (error) {
         getByid("circle").style.display = "none";
+        getByid("errorMessage").style.display = "No such file";
         console.error("請求失敗：", error);
       });
   }
