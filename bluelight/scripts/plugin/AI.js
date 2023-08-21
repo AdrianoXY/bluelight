@@ -362,9 +362,19 @@ getByid("runmodel").onclick = function () {
         }
       })
       .catch(function (error) {
-        getByid("circle").style.display = "none";
-        getByid("errorMessage").innerHTML = "No such file";
-        console.error("請求失敗：", error);
+        if (error.status == 400) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "PACS No such file";
+          console.error("請求失敗：", error);
+        } else if (error.status == 422) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "MongoDB Error";
+          console.error("請求失敗：", error);
+        } else if (error.status == 500) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "AI Server Error";
+          console.error("請求失敗：", error);
+        }
       });
   } else if (aimodelname == "Yolo8") {
     axios
@@ -390,9 +400,19 @@ getByid("runmodel").onclick = function () {
         }
       })
       .catch(function (error) {
-        getByid("circle").style.display = "none";
-        getByid("errorMessage").innerHTML = "No such file";
-        console.error("請求失敗：", error);
+        if (error.status == 400) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "PACS No such file";
+          console.error("請求失敗：", error);
+        } else if (error.status == 422) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "MongoDB Error";
+          console.error("請求失敗：", error);
+        } else if (error.status == 500) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "AI Server Error";
+          console.error("請求失敗：", error);
+        }
       });
   } else if (aimodelname == "Yolo4") {
     axios
@@ -418,12 +438,21 @@ getByid("runmodel").onclick = function () {
         }
       })
       .catch(function (error) {
-        getByid("circle").style.display = "none";
-        getByid("errorMessage").innerHTML = "No such file";
-        console.error("請求失敗：", error);
+        if (error.status == 400) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "PACS No such file";
+          console.error("請求失敗：", error);
+        } else if (error.status == 422) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "MongoDB Error";
+          console.error("請求失敗：", error);
+        } else if (error.status == 500) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "AI Server Error";
+          console.error("請求失敗：", error);
+        }
       });
   } else if (aimodelname == "handFilter") {
-    console.log("1");
     axios
       .post("handfilter", data)
       .then(function (response) {
@@ -440,9 +469,19 @@ getByid("runmodel").onclick = function () {
         }
       })
       .catch(function (error) {
-        getByid("circle").style.display = "none";
-        getByid("errorMessage").innerHTML = "No such file";
-        console.error("請求失敗：", error);
+        if (error.status == 400) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "PACS No such file";
+          console.error("請求失敗：", error);
+        } else if (error.status == 422) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "MongoDB Error";
+          console.error("請求失敗：", error);
+        } else if (error.status == 500) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "AI Server Error";
+          console.error("請求失敗：", error);
+        }
       });
   } else if (aimodelname == "SMART5") {
     axios
@@ -454,9 +493,19 @@ getByid("runmodel").onclick = function () {
         sm5++;
       })
       .catch(function (error) {
-        getByid("circle").style.display = "none";
-        getByid("errorMessage").innerHTML = "No such file";
-        console.error("請求失敗：", error);
+        if (error.status == 400) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "PACS No such file";
+          console.error("請求失敗：", error);
+        } else if (error.status == 422) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "MongoDB Error";
+          console.error("請求失敗：", error);
+        } else if (error.status == 500) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "AI Server Error";
+          console.error("請求失敗：", error);
+        }
       });
   }
 };
@@ -523,9 +572,19 @@ getByid("rerunmodel").onclick = function () {
         }
       })
       .catch(function (error) {
-        getByid("circle").style.display = "none";
-        getByid("errorMessage").style.display = "No such file";
-        console.error("請求失敗：", error);
+        if (error.status == 400) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "PACS No such file";
+          console.error("請求失敗：", error);
+        } else if (error.status == 422) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "MongoDB Error";
+          console.error("請求失敗：", error);
+        } else if (error.status == 500) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "AI Server Error";
+          console.error("請求失敗：", error);
+        }
       });
   } else if (aimodelname == "Yolo8") {
     deleteMark();
@@ -548,9 +607,19 @@ getByid("rerunmodel").onclick = function () {
         }
       })
       .catch(function (error) {
-        getByid("circle").style.display = "none";
-        getByid("errorMessage").style.display = "No such file";
-        console.error("請求失敗：", error);
+        if (error.status == 400) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "PACS No such file";
+          console.error("請求失敗：", error);
+        } else if (error.status == 422) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "MongoDB Error";
+          console.error("請求失敗：", error);
+        } else if (error.status == 500) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "AI Server Error";
+          console.error("請求失敗：", error);
+        }
       });
   } else if (aimodelname == "Yolo4") {
     deleteMark();
@@ -573,9 +642,19 @@ getByid("rerunmodel").onclick = function () {
         }
       })
       .catch(function (error) {
-        getByid("circle").style.display = "none";
-        getByid("errorMessage").style.display = "No such file";
-        console.error("請求失敗：", error);
+        if (error.status == 400) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "PACS No such file";
+          console.error("請求失敗：", error);
+        } else if (error.status == 422) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "MongoDB Error";
+          console.error("請求失敗：", error);
+        } else if (error.status == 500) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "AI Server Error";
+          console.error("請求失敗：", error);
+        }
       });
   } else if (aimodelname == "handFilter") {
     handReport = [];
@@ -593,9 +672,19 @@ getByid("rerunmodel").onclick = function () {
         }
       })
       .catch(function (error) {
-        getByid("circle").style.display = "none";
-        getByid("errorMessage").style.display = "No such file";
-        console.error("請求失敗：", error);
+        if (error.status == 400) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "PACS No such file";
+          console.error("請求失敗：", error);
+        } else if (error.status == 422) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "MongoDB Error";
+          console.error("請求失敗：", error);
+        } else if (error.status == 500) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "AI Server Error";
+          console.error("請求失敗：", error);
+        }
       });
   } else if (aimodelname == "SMART5") {
     axios
@@ -606,9 +695,19 @@ getByid("rerunmodel").onclick = function () {
         blob(response.data._streams[1].data);
       })
       .catch(function (error) {
-        getByid("circle").style.display = "none";
-        getByid("errorMessage").style.display = "No such file";
-        console.error("請求失敗：", error);
+        if (error.status == 400) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "PACS No such file";
+          console.error("請求失敗：", error);
+        } else if (error.status == 422) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "MongoDB Error";
+          console.error("請求失敗：", error);
+        } else if (error.status == 500) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "AI Server Error";
+          console.error("請求失敗：", error);
+        }
       });
   }
 };
