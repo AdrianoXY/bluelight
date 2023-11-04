@@ -1,4 +1,5 @@
 var openAIModel = false;
+//計數參數
 var yv3s = 0,
   yv3m = 0;
 yv4s = 0;
@@ -8,13 +9,19 @@ yv8m = 0;
 hfs = 0;
 hfm = 0;
 sm5 = 0;
+yv7s = 0;
+yv7m = 0;
+yv7os = 0;
+yv7om = 0;
 let aimodelname, Multiple;
 let aiInfoArray = [];
 let handReport = [];
 
+//設定呼叫後端的API
 axios.defaults.baseURL = "http://192.168.20.133/ghlBackend/ghl/api/aimodel";
 // axios.defaults.baseURL = "http://192.168.50.202:3002/api/aimodel";
 
+//前端畫面顯示
 function loadAIModel() {
   var span = document.createElement("SPAN");
   span.innerHTML = `<img class="AIModelimg" alt="AIModel" id="AIModel" src="../image/icon/black/Model_OFF.png" width="50" height="50">`;
@@ -45,6 +52,8 @@ function loadAIModel() {
         <option id="Yolo8">Yolo8</option>
         <option id="handFilter">handFilter</option>
         <option id="Smart5">SMART5</option>
+        <option id="Yolo7">Yolo7</option>
+        <option id="Yolo7Original">Yolo7Original</option>
         </select>
         <span style="color: white;" id="multiple">Multiple:</span>
         <Select id="mulSelect">
@@ -70,12 +79,16 @@ function loadAIModel() {
   getByid("Yolo4").style.display = "none";
   getByid("handFilter").style.display = "none";
   getByid("Smart5").style.display = "none";
+  getByid("Yolo7").style.display = "none";
+  getByid("Yolo7Original").style.display = "none";
   getByid("circle").style.display = "none";
   getByid("rerunmodel").style.display = "none";
   getByid("errorMessage").style.display = "none";
 }
 loadAIModel();
 
+
+//handFilter報告內容
 function handFilterReport() {
   var span = document.createElement("SPAN");
   span.innerHTML = `
@@ -93,7 +106,10 @@ function handFilterReport() {
 }
 handFilterReport();
 
+
+//設定是否出現rerun
 function Hidden() {
+  //Yolo3
   if (aimodelname == "Yolo3" && Multiple == "Single" && yv3s > 0) {
     getByid("rerunmodel").style.display = "";
   } else if (aimodelname == "Yolo3" && Multiple == "Single" && yv3s == 0) {
@@ -105,19 +121,19 @@ function Hidden() {
   } else if (aimodelname == "Yolo3" && Multiple == "Multiple" && yv3m == 0) {
     getByid("rerunmodel").style.display = "none";
   }
-
+  //Yolo4
   if (aimodelname == "Yolo4" && Multiple == "Single" && yv4s > 0) {
     getByid("rerunmodel").style.display = "";
   } else if (aimodelname == "Yolo4" && Multiple == "Single" && yv4s == 0) {
     getByid("rerunmodel").style.display = "none";
   }
 
-  if (aimodelname == "Yolo8" && Multiple == "Multiple" && yv8m > 0) {
+  if (aimodelname == "Yolo4" && Multiple == "Multiple" && yv4m > 0) {
     getByid("rerunmodel").style.display = "";
-  } else if (aimodelname == "Yolo8" && Multiple == "Multiple" && yv8m == 0) {
+  } else if (aimodelname == "Yolo4" && Multiple == "Multiple" && yv4m == 0) {
     getByid("rerunmodel").style.display = "none";
   }
-
+  //Yolo8
   if (aimodelname == "Yolo8" && Multiple == "Single" && yv8s > 0) {
     getByid("rerunmodel").style.display = "";
   } else if (aimodelname == "Yolo8" && Multiple == "Single" && yv8s == 0) {
@@ -129,7 +145,31 @@ function Hidden() {
   } else if (aimodelname == "Yolo8" && Multiple == "Multiple" && yv8m == 0) {
     getByid("rerunmodel").style.display = "none";
   }
+  //Yolo7
+  if (aimodelname == "Yolo7" && Multiple == "Single" && yv7s > 0) {
+    getByid("rerunmodel").style.display = "";
+  } else if (aimodelname == "Yolo7" && Multiple == "Single" && yv7s == 0) {
+    getByid("rerunmodel").style.display = "none";
+  }
 
+  if (aimodelname == "Yolo7" && Multiple == "Multiple" && yv7m > 0) {
+    getByid("rerunmodel").style.display = "";
+  } else if (aimodelname == "Yolo7" && Multiple == "Multiple" && yv7m == 0) {
+    getByid("rerunmodel").style.display = "none";
+  }
+  //Yolo7Original
+  if (aimodelname == "Yolo7Original" && Multiple == "Single" && yv7os > 0) {
+    getByid("rerunmodel").style.display = "";
+  } else if (aimodelname == "Yolo7Original" && Multiple == "Single" && yv7os == 0) {
+    getByid("rerunmodel").style.display = "none";
+  }
+
+  if (aimodelname == "Yolo7Original" && Multiple == "Multiple" && yv7om > 0) {
+    getByid("rerunmodel").style.display = "";
+  } else if (aimodelname == "Yolo7Original" && Multiple == "Multiple" && yv7om == 0) {
+    getByid("rerunmodel").style.display = "none";
+  }
+  //handFilter
   if (aimodelname == "handFilter" && Multiple == "Single" && hfs > 0) {
     getByid("rerunmodel").style.display = "";
   } else if (aimodelname == "handFilter" && Multiple == "Single" && hfs == 0) {
@@ -145,7 +185,7 @@ function Hidden() {
   ) {
     getByid("rerunmodel").style.display = "none";
   }
-
+  //SMART5
   if (aimodelname == "SMART5" && sm5 > 0) {
     getByid("rerunmodel").style.display = "";
   } else if (aimodelname == "SMART5" && sm5 == 0) {
@@ -162,6 +202,8 @@ function Hidden() {
   }
 }
 
+
+//解析dicom檔案
 async function blob(streamsData) {
   try {
     resetViewport();
@@ -189,6 +231,8 @@ function load(time) {
   return new Promise((resolve) => setTimeout(resolve, time));
 }
 
+
+//解析後端回傳之handFilter的東西
 function handFilter(reportData) {
   for (let i = 0; i < reportData.length; i++) {
     var newData = {
@@ -202,6 +246,7 @@ function handFilter(reportData) {
   showhandFilterReport();
 }
 
+//檢視handFiulter的報告
 function showhandFilterReport() {
   var SOPInstanceUID, Report;
   for (var i = 0; i < GetViewport().DicomTagsList.length; i++) {
@@ -218,6 +263,7 @@ function showhandFilterReport() {
   updateReport(SOPInstanceUID, Report);
 }
 
+//更新handFilter的報告
 function updateReport(SOPInstanceUID, Report) {
   var ViewportSOPUID;
   for (var i = 0; i < GetViewport().DicomTagsList.length; i++) {
@@ -235,6 +281,7 @@ function updateReport(SOPInstanceUID, Report) {
   }
 }
 
+//更新時刪除標記
 function deleteMark() {
   PatientMark = [];
   for (var i = 0; i < Viewport_Total; i++) {
@@ -243,6 +290,8 @@ function deleteMark() {
   }
 }
 
+
+//選擇部位時顯示的model模型
 getByid("Bodypart").onchange = function () {
   getByid("errorMessage").innerHTML = "";
   if (getByid("Bodypart").value == "Hand") {
@@ -251,9 +300,13 @@ getByid("Bodypart").onchange = function () {
     getByid("Yolo8").style.display = "none";
     getByid("Yolo4").style.display = "";
     getByid("Smart5").style.display = "none";
+    getByid("Yolo7").style.display = "none";
+    getByid("Yolo7Original").style.display = "none";
     getByid("AIModelSelect").value = "";
   } else if (getByid("Bodypart").value == "Brain") {
     getByid("Smart5").style.display = "";
+    getByid("Yolo7").style.display = "";
+    getByid("Yolo7Original").style.display = "";
     getByid("Yolo3").style.display = "none";
     getByid("Yolo8").style.display = "none";
     getByid("Yolo4").style.display = "none";
@@ -265,10 +318,14 @@ getByid("Bodypart").onchange = function () {
     getByid("Yolo4").style.display = "none";
     getByid("handFilter").style.display = "none";
     getByid("Smart5").style.display = "none";
+    getByid("Yolo7").style.display = "none";
+    getByid("Yolo7Original").style.display = "none";
     getByid("AIModelSelect").value = "";
   }
 };
 
+
+//前端顯示圖示更改
 getByid("AIModel").onclick = function () {
   openAIModel = !openAIModel;
   this.src = openAIModel
@@ -281,18 +338,21 @@ getByid("AIModel").onclick = function () {
   }
 };
 
+//AImodel Select onChange事件
 getByid("AIModelSelect").onchange = function (e) {
   aimodelname = e.target.value;
   getByid("errorMessage").innerHTML = "";
   Hidden();
 };
 
+//單張多張 onChange事件
 getByid("mulSelect").onchange = function (e) {
   Multiple = e.target.value;
   getByid("errorMessage").innerHTML = "";
   Hidden();
 };
 
+//run onClick 事件
 getByid("runmodel").onclick = function () {
   var StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID, data;
   handReport = [];
@@ -452,7 +512,83 @@ getByid("runmodel").onclick = function () {
           console.error("請求失敗：", error);
         }
       });
-  } else if (aimodelname == "handFilter") {
+  } else if (aimodelname == "Yolo7") {
+    axios
+      .post("yolov7", data)
+      .then(function (response) {
+        if (response.status == 200 && Multiple == "Single") {
+          getByid("circle").style.display = "none";
+          getByid("rerunmodel").style.display = "";
+          blob(response.data._streams[1].data);
+          yv7s++;
+        } else if (response.status == 200 && Multiple == "Multiple") {
+          getByid("circle").style.display = "none";
+          getByid("rerunmodel").style.display = "";
+          var j = 0;
+          for (var i = 0; i < response.data._streams.length; i += 3) {
+            aiInfoArray[j] = response.data._streams[i + 1].data;
+            j++;
+          }
+          for (var i = 0; i < aiInfoArray.length; i++) {
+            blob(aiInfoArray[i]);
+          }
+          yv7m++;
+        }
+      })
+      .catch(function (error) {
+        if (error.status == 400) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "PACS No such file";
+          console.error("請求失敗：", error);
+        } else if (error.status == 422) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "MongoDB Error";
+          console.error("請求失敗：", error);
+        } else if (error.status == 500) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "AI Server Error";
+          console.error("請求失敗：", error);
+        }
+      });
+  }else if (aimodelname == "Yolo7Original") {
+    axios
+      .post("yolov7Origin", data)
+      .then(function (response) {
+        if (response.status == 200 && Multiple == "Single") {
+          getByid("circle").style.display = "none";
+          getByid("rerunmodel").style.display = "";
+          blob(response.data._streams[1].data);
+          yv7os++;
+        } else if (response.status == 200 && Multiple == "Multiple") {
+          getByid("circle").style.display = "none";
+          getByid("rerunmodel").style.display = "";
+          var j = 0;
+          for (var i = 0; i < response.data._streams.length; i += 3) {
+            aiInfoArray[j] = response.data._streams[i + 1].data;
+            j++;
+          }
+          for (var i = 0; i < aiInfoArray.length; i++) {
+            blob(aiInfoArray[i]);
+          }
+          yv7om++;
+        }
+      })
+      .catch(function (error) {
+        if (error.status == 400) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "PACS No such file";
+          console.error("請求失敗：", error);
+        } else if (error.status == 422) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "MongoDB Error";
+          console.error("請求失敗：", error);
+        } else if (error.status == 500) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "AI Server Error";
+          console.error("請求失敗：", error);
+        }
+      });
+  }else if (aimodelname == "handFilter") {
     axios
       .post("handfilter", data)
       .then(function (response) {
@@ -625,6 +761,76 @@ getByid("rerunmodel").onclick = function () {
     deleteMark();
     axios
       .post("yolov4", data)
+      .then(function (response) {
+        if (response.status == 200 && Multiple == "Single") {
+          getByid("circle").style.display = "none";
+          blob(response.data._streams[1].data);
+        } else if (response.status == 200 && Multiple == "Multiple") {
+          getByid("circle").style.display = "none";
+          var j = 0;
+          for (var i = 0; i < response.data._streams.length; i += 3) {
+            aiInfoArray[j] = response.data._streams[i + 1].data;
+            j++;
+          }
+          for (var i = 0; i < aiInfoArray.length; i++) {
+            blob(aiInfoArray[i]);
+          }
+        }
+      })
+      .catch(function (error) {
+        if (error.status == 400) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "PACS No such file";
+          console.error("請求失敗：", error);
+        } else if (error.status == 422) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "MongoDB Error";
+          console.error("請求失敗：", error);
+        } else if (error.status == 500) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "AI Server Error";
+          console.error("請求失敗：", error);
+        }
+      });
+  }else if (aimodelname == "Yolo7") {
+    deleteMark();
+    axios
+      .post("yolov7", data)
+      .then(function (response) {
+        if (response.status == 200 && Multiple == "Single") {
+          getByid("circle").style.display = "none";
+          blob(response.data._streams[1].data);
+        } else if (response.status == 200 && Multiple == "Multiple") {
+          getByid("circle").style.display = "none";
+          var j = 0;
+          for (var i = 0; i < response.data._streams.length; i += 3) {
+            aiInfoArray[j] = response.data._streams[i + 1].data;
+            j++;
+          }
+          for (var i = 0; i < aiInfoArray.length; i++) {
+            blob(aiInfoArray[i]);
+          }
+        }
+      })
+      .catch(function (error) {
+        if (error.status == 400) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "PACS No such file";
+          console.error("請求失敗：", error);
+        } else if (error.status == 422) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "MongoDB Error";
+          console.error("請求失敗：", error);
+        } else if (error.status == 500) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "AI Server Error";
+          console.error("請求失敗：", error);
+        }
+      });
+  }else if (aimodelname == "Yolo7Original") {
+    deleteMark();
+    axios
+      .post("yolov7Origin", data)
       .then(function (response) {
         if (response.status == 200 && Multiple == "Single") {
           getByid("circle").style.display = "none";
