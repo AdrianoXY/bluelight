@@ -300,13 +300,13 @@ getByid("Bodypart").onchange = function () {
     getByid("Yolo8").style.display = "none";
     getByid("Yolo4").style.display = "";
     getByid("Smart5").style.display = "none";
-    getByid("Yolo7").style.display = "none";
-    getByid("Yolo7Original").style.display = "none";
+    getByid("Yolo7").style.display = "";
+    getByid("Yolo7Original").style.display = "";
     getByid("AIModelSelect").value = "";
   } else if (getByid("Bodypart").value == "Brain") {
     getByid("Smart5").style.display = "";
-    getByid("Yolo7").style.display = "";
-    getByid("Yolo7Original").style.display = "";
+    getByid("Yolo7").style.display = "none";
+    getByid("Yolo7Original").style.display = "none";
     getByid("Yolo3").style.display = "none";
     getByid("Yolo8").style.display = "none";
     getByid("Yolo4").style.display = "none";
