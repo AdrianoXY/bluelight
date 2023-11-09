@@ -13,6 +13,8 @@ yv7s = 0;
 yv7m = 0;
 yv7os = 0;
 yv7om = 0;
+ichs  = 0;
+ichm = 0;
 let aimodelname, Multiple;
 let aiInfoArray = [];
 let handReport = [];
@@ -54,6 +56,7 @@ function loadAIModel() {
         <option id="Smart5">SMART5</option>
         <option id="Yolo7">Yolo7</option>
         <option id="Yolo7Original">Yolo7Original</option>
+        <option id="ich">ICH</option>
         </select>
         <span style="color: white;" id="multiple">Multiple:</span>
         <Select id="mulSelect">
@@ -81,6 +84,7 @@ function loadAIModel() {
   getByid("Smart5").style.display = "none";
   getByid("Yolo7").style.display = "none";
   getByid("Yolo7Original").style.display = "none";
+  getByid("ich").style.display = "none";
   getByid("circle").style.display = "none";
   getByid("rerunmodel").style.display = "none";
   getByid("errorMessage").style.display = "none";
@@ -169,6 +173,18 @@ function Hidden() {
   } else if (aimodelname == "Yolo7Original" && Multiple == "Multiple" && yv7om == 0) {
     getByid("rerunmodel").style.display = "none";
   }
+  //ich
+  if (aimodelname == "ICH" && Multiple == "Single" && ichs > 0) {
+    getByid("rerunmodel").style.display = "";
+  } else if (aimodelname == "ICH" && Multiple == "Single" && ichs == 0) {
+    getByid("rerunmodel").style.display = "none";
+  }
+
+  if (aimodelname == "ICH" && Multiple == "Multiple" && ichm > 0) {
+    getByid("rerunmodel").style.display = "";
+  } else if (aimodelname == "ICH" && Multiple == "Multiple" && ichm == 0) {
+    getByid("rerunmodel").style.display = "none";
+  }
   //handFilter
   if (aimodelname == "handFilter" && Multiple == "Single" && hfs > 0) {
     getByid("rerunmodel").style.display = "";
@@ -232,7 +248,7 @@ function load(time) {
 }
 
 
-//解析後端回傳之handFilter的東西
+//handFilter 報告處理
 function handFilter(reportData) {
   for (let i = 0; i < reportData.length; i++) {
     var newData = {
@@ -246,7 +262,7 @@ function handFilter(reportData) {
   showhandFilterReport();
 }
 
-//檢視handFiulter的報告
+
 function showhandFilterReport() {
   var SOPInstanceUID, Report;
   for (var i = 0; i < GetViewport().DicomTagsList.length; i++) {
@@ -263,7 +279,7 @@ function showhandFilterReport() {
   updateReport(SOPInstanceUID, Report);
 }
 
-//更新handFilter的報告
+
 function updateReport(SOPInstanceUID, Report) {
   var ViewportSOPUID;
   for (var i = 0; i < GetViewport().DicomTagsList.length; i++) {
@@ -280,6 +296,7 @@ function updateReport(SOPInstanceUID, Report) {
     getByid("handFilterReport").style.display = "none";
   }
 }
+//handFilter 報告處理
 
 //更新時刪除標記
 function deleteMark() {
@@ -302,6 +319,7 @@ getByid("Bodypart").onchange = function () {
     getByid("Smart5").style.display = "none";
     getByid("Yolo7").style.display = "";
     getByid("Yolo7Original").style.display = "";
+    getByid("ich").style.display = "none"
     getByid("AIModelSelect").value = "";
   } else if (getByid("Bodypart").value == "Brain") {
     getByid("Smart5").style.display = "";
@@ -310,6 +328,7 @@ getByid("Bodypart").onchange = function () {
     getByid("Yolo3").style.display = "none";
     getByid("Yolo8").style.display = "none";
     getByid("Yolo4").style.display = "none";
+    getByid("ich").style.display = "none"
     getByid("AIModelSelect").value = "";
     getByid("handFilter").style.display = "none";
   } else if (getByid("Bodypart").value == "lung") {
@@ -320,6 +339,7 @@ getByid("Bodypart").onchange = function () {
     getByid("Smart5").style.display = "none";
     getByid("Yolo7").style.display = "none";
     getByid("Yolo7Original").style.display = "none";
+    getByid("ich").style.display = ""
     getByid("AIModelSelect").value = "";
   }
 };
@@ -352,7 +372,7 @@ getByid("mulSelect").onchange = function (e) {
   Hidden();
 };
 
-//run onClick 事件
+//執行AI Model 事件
 getByid("runmodel").onclick = function () {
   var StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID, data;
   handReport = [];
@@ -619,7 +639,45 @@ getByid("runmodel").onclick = function () {
           console.error("請求失敗：", error);
         }
       });
-  } else if (aimodelname == "SMART5") {
+  } else if (aimodelname == "ICH") {
+    axios
+      .post("ich", data)
+      .then(function (response) {
+        if (response.status == 200 && Multiple == "Single") {
+          getByid("circle").style.display = "none";
+          getByid("rerunmodel").style.display = "";
+          blob(response.data._streams[1].data);
+          ichs++;
+        } else if (response.status == 200 && Multiple == "Multiple") {
+          getByid("circle").style.display = "none";
+          getByid("rerunmodel").style.display = "";
+          var j = 0;
+          for (var i = 0; i < response.data._streams.length; i += 3) {
+            aiInfoArray[j] = response.data._streams[i + 1].data;
+            j++;
+          }
+          for (var i = 0; i < aiInfoArray.length; i++) {
+            blob(aiInfoArray[i]);
+          }
+          ichm++;
+        }
+      })
+      .catch(function (error) {
+        if (error.status == 400) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "PACS No such file";
+          console.error("請求失敗：", error);
+        } else if (error.status == 422) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "MongoDB Error";
+          console.error("請求失敗：", error);
+        } else if (error.status == 500) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "AI Server Error";
+          console.error("請求失敗：", error);
+        }
+      });
+  }else if (aimodelname == "SMART5") {
     axios
       .post("smart5", data)
       .then(function (response) {
@@ -892,6 +950,41 @@ getByid("rerunmodel").onclick = function () {
           console.error("請求失敗：", error);
         }
       });
+  }else if (aimodelname == "ICH") {
+    deleteMark();
+    axios
+      .post("ich", data)
+      .then(function (response) {
+        if (response.status == 200 && Multiple == "Single") {
+          getByid("circle").style.display = "none";
+          blob(response.data._streams[1].data);
+        } else if (response.status == 200 && Multiple == "Multiple") {
+          getByid("circle").style.display = "none";
+          var j = 0;
+          for (var i = 0; i < response.data._streams.length; i += 3) {
+            aiInfoArray[j] = response.data._streams[i + 1].data;
+            j++;
+          }
+          for (var i = 0; i < aiInfoArray.length; i++) {
+            blob(aiInfoArray[i]);
+          }
+        }
+      })
+      .catch(function (error) {
+        if (error.status == 400) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "PACS No such file";
+          console.error("請求失敗：", error);
+        } else if (error.status == 422) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "MongoDB Error";
+          console.error("請求失敗：", error);
+        } else if (error.status == 500) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "AI Server Error";
+          console.error("請求失敗：", error);
+        }
+      });
   } else if (aimodelname == "SMART5") {
     axios
       .post("smart5", data)
@@ -917,6 +1010,7 @@ getByid("rerunmodel").onclick = function () {
       });
   }
 };
+//執行AI Model 事件
 
 window.addEventListener("wheel", () => {
   if (!handReport || handReport.length === 0) {
