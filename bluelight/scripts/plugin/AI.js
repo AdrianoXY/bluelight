@@ -13,14 +13,13 @@ yv7s = 0;
 yv7m = 0;
 yv7os = 0;
 yv7om = 0;
-ichs  = 0;
-ichm = 0;
+ich  = 0;
 let aimodelname, Multiple;
 let aiInfoArray = [];
 let handReport = [];
 
 //設定呼叫後端的API
-axios.defaults.baseURL = "http://192.168.20.133/ghlBackend/ghl/api/aimodel";
+axios.defaults.baseURL = "http://localhost:3002/api/aimodel";
 // axios.defaults.baseURL = "http://192.168.50.202:3002/api/aimodel";
 
 //前端畫面顯示
@@ -173,18 +172,6 @@ function Hidden() {
   } else if (aimodelname == "Yolo7Original" && Multiple == "Multiple" && yv7om == 0) {
     getByid("rerunmodel").style.display = "none";
   }
-  //ich
-  if (aimodelname == "ICH" && Multiple == "Single" && ichs > 0) {
-    getByid("rerunmodel").style.display = "";
-  } else if (aimodelname == "ICH" && Multiple == "Single" && ichs == 0) {
-    getByid("rerunmodel").style.display = "none";
-  }
-
-  if (aimodelname == "ICH" && Multiple == "Multiple" && ichm > 0) {
-    getByid("rerunmodel").style.display = "";
-  } else if (aimodelname == "ICH" && Multiple == "Multiple" && ichm == 0) {
-    getByid("rerunmodel").style.display = "none";
-  }
   //handFilter
   if (aimodelname == "handFilter" && Multiple == "Single" && hfs > 0) {
     getByid("rerunmodel").style.display = "";
@@ -207,12 +194,18 @@ function Hidden() {
   } else if (aimodelname == "SMART5" && sm5 == 0) {
     getByid("rerunmodel").style.display = "none";
   }
+  //ICH
+  if (aimodelname == "ICH" && ich > 0) {
+    getByid("rerunmodel").style.display = "";
+  } else if (aimodelname == "ICH" && ich == 0) {
+    getByid("rerunmodel").style.display = "none";
+  }
 
-  if (aimodelname == "SMART5") {
+  if (aimodelname == "SMART5" || aimodelname == "ICH") {
     getByid("mulSelect").style.display = "none";
     getByid("multiple").style.display = "none";
     getByid("mulSelect").value = "";
-  } else if (aimodelname != "SMART5") {
+  } else if (aimodelname != "SMART5" || aimodelname == "ICH") {
     getByid("mulSelect").style.display = "";
     getByid("multiple").style.display = "";
   }
@@ -376,14 +369,14 @@ getByid("mulSelect").onchange = function (e) {
 getByid("runmodel").onclick = function () {
   var StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID, data;
   handReport = [];
-  deleteMark();
+//   deleteMark();
   getByid("errorMessage").style.display = "";
   getByid("errorMessage").innerHTML = "";
 
   if (
     getByid("AIModelSelect").value == "" ||
     (getByid("mulSelect").value == "" &&
-      getByid("AIModelSelect").value != "SMART5")
+      getByid("AIModelSelect").value != "SMART5"&&getByid("AIModelSelect").value != "ICH")
   ) {
     return;
   }
@@ -401,7 +394,7 @@ getByid("runmodel").onclick = function () {
     }
   }
 
-  if (aimodelname == "SMART5") {
+  if (aimodelname == "SMART5" || aimodelname == "ICH") {
     data = {
       studyInstanceUid: StudyInstanceUID,
     };
@@ -643,24 +636,10 @@ getByid("runmodel").onclick = function () {
     axios
       .post("ich", data)
       .then(function (response) {
-        if (response.status == 200 && Multiple == "Single") {
-          getByid("circle").style.display = "none";
-          getByid("rerunmodel").style.display = "";
-          blob(response.data._streams[1].data);
-          ichs++;
-        } else if (response.status == 200 && Multiple == "Multiple") {
-          getByid("circle").style.display = "none";
-          getByid("rerunmodel").style.display = "";
-          var j = 0;
-          for (var i = 0; i < response.data._streams.length; i += 3) {
-            aiInfoArray[j] = response.data._streams[i + 1].data;
-            j++;
-          }
-          for (var i = 0; i < aiInfoArray.length; i++) {
-            blob(aiInfoArray[i]);
-          }
-          ichm++;
-        }
+        getByid("circle").style.display = "none";
+        getByid("rerunmodel").style.display = "";
+        blob(response.data._streams[1].data);
+        ich++;
       })
       .catch(function (error) {
         if (error.status == 400) {
@@ -707,7 +686,7 @@ getByid("runmodel").onclick = function () {
 getByid("rerunmodel").onclick = function () {
   var StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID, data;
   handReport = [];
-  deleteMark();
+//   deleteMark();
 
   getByid("errorMessage").style.display = "";
   getByid("errorMessage").innerHTML = "";
@@ -725,7 +704,7 @@ getByid("rerunmodel").onclick = function () {
     }
   }
 
-  if (aimodelname == "SMART5") {
+  if (aimodelname == "SMART5" || aimodelname == "ICH") {
     data = {
       studyInstanceUid: StudyInstanceUID,
       reload: "true",
@@ -746,7 +725,7 @@ getByid("rerunmodel").onclick = function () {
   }
 
   if (aimodelname == "Yolo3") {
-    deleteMark();
+    // deleteMark();
     axios
       .post("yolov3", data)
       .then(function (response) {
@@ -781,7 +760,7 @@ getByid("rerunmodel").onclick = function () {
         }
       });
   } else if (aimodelname == "Yolo8") {
-    deleteMark();
+    // deleteMark();
     axios
       .post("yolov8", data)
       .then(function (response) {
@@ -816,7 +795,7 @@ getByid("rerunmodel").onclick = function () {
         }
       });
   } else if (aimodelname == "Yolo4") {
-    deleteMark();
+    // deleteMark();
     axios
       .post("yolov4", data)
       .then(function (response) {
@@ -851,7 +830,7 @@ getByid("rerunmodel").onclick = function () {
         }
       });
   }else if (aimodelname == "Yolo7") {
-    deleteMark();
+    // deleteMark();
     axios
       .post("yolov7", data)
       .then(function (response) {
@@ -886,7 +865,7 @@ getByid("rerunmodel").onclick = function () {
         }
       });
   }else if (aimodelname == "Yolo7Original") {
-    deleteMark();
+    // deleteMark();
     axios
       .post("yolov7Origin", data)
       .then(function (response) {
@@ -951,24 +930,12 @@ getByid("rerunmodel").onclick = function () {
         }
       });
   }else if (aimodelname == "ICH") {
-    deleteMark();
     axios
       .post("ich", data)
       .then(function (response) {
-        if (response.status == 200 && Multiple == "Single") {
-          getByid("circle").style.display = "none";
-          blob(response.data._streams[1].data);
-        } else if (response.status == 200 && Multiple == "Multiple") {
-          getByid("circle").style.display = "none";
-          var j = 0;
-          for (var i = 0; i < response.data._streams.length; i += 3) {
-            aiInfoArray[j] = response.data._streams[i + 1].data;
-            j++;
-          }
-          for (var i = 0; i < aiInfoArray.length; i++) {
-            blob(aiInfoArray[i]);
-          }
-        }
+        getByid("circle").style.display = "none";
+        getByid("rerunmodel").style.display = "";
+        blob(response.data._streams[1].data);
       })
       .catch(function (error) {
         if (error.status == 400) {
