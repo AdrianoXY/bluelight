@@ -940,9 +940,16 @@ getByid("rerunmodel").onclick = function () {
     axios
       .post("ich", data)
       .then(function (response) {
-        getByid("circle").style.display = "none";
-        getByid("rerunmodel").style.display = "";
-        blob(response.data._streams[1].data);
+          getByid("circle").style.display = "none";
+          getByid("rerunmodel").style.display = "";
+          var j = 0;
+          for (var i = 0; i < response.data._streams.length; i += 3) {
+            aiInfoArray[j] = response.data._streams[i + 1].data;
+            j++;
+          }
+          for (var i = 0; i < aiInfoArray.length; i++) {
+            blob(aiInfoArray[i]);
+          }
       })
       .catch(function (error) {
         if (error.status == 400) {
