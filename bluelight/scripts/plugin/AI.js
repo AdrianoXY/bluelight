@@ -321,7 +321,7 @@ getByid("Bodypart").onchange = function () {
     getByid("Yolo3").style.display = "none";
     getByid("Yolo8").style.display = "none";
     getByid("Yolo4").style.display = "none";
-    getByid("ich").style.display = "none"
+    getByid("ich").style.display = ""
     getByid("AIModelSelect").value = "";
     getByid("handFilter").style.display = "none";
   } else if (getByid("Bodypart").value == "lung") {
@@ -332,7 +332,7 @@ getByid("Bodypart").onchange = function () {
     getByid("Smart5").style.display = "none";
     getByid("Yolo7").style.display = "none";
     getByid("Yolo7Original").style.display = "none";
-    getByid("ich").style.display = ""
+    getByid("ich").style.display = "none"
     getByid("AIModelSelect").value = "";
   }
 };
@@ -636,10 +636,17 @@ getByid("runmodel").onclick = function () {
     axios
       .post("ich", data)
       .then(function (response) {
-        getByid("circle").style.display = "none";
-        getByid("rerunmodel").style.display = "";
-        blob(response.data._streams[1].data);
-        ich++;
+          getByid("circle").style.display = "none";
+          getByid("rerunmodel").style.display = "";
+          var j = 0;
+          for (var i = 0; i < response.data._streams.length; i += 3) {
+            aiInfoArray[j] = response.data._streams[i + 1].data;
+            j++;
+          }
+          for (var i = 0; i < aiInfoArray.length; i++) {
+            blob(aiInfoArray[i]);
+          }
+          ich++;
       })
       .catch(function (error) {
         if (error.status == 400) {
