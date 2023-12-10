@@ -20,7 +20,7 @@ let handReport = [];
 
 //設定呼叫後端的API
 axios.defaults.baseURL = "http://localhost:3002/api/aimodel";
-// axios.defaults.baseURL = "http://192.168.50.202:3002/api/aimodel";
+
 
 //前端畫面顯示
 function loadAIModel() {
