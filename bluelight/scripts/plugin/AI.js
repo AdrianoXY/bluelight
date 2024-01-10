@@ -13,7 +13,8 @@ yv7s = 0;
 yv7m = 0;
 yv7os = 0;
 yv7om = 0;
-ich  = 0;
+ich = 0;
+bc = 0;
 let aimodelname, Multiple;
 let aiInfoArray = [];
 let handReport = [];
@@ -44,6 +45,7 @@ function loadAIModel() {
         <option id="hand">Hand</option>
         <option id="brain">Brain</option>
         <option id="lung">lung</option>
+        <option id="breast>Breast</option>
         </select>
         <span style="color: white;" id="AIModelSpan">AI Model:</span>
         <select id="AIModelSelect">
@@ -56,6 +58,7 @@ function loadAIModel() {
         <option id="Yolo7">Yolo7</option>
         <option id="Yolo7Original">Yolo7Original</option>
         <option id="ich">ICH</option>
+        <option id="bc">BC</option>
         </select>
         <span style="color: white;" id="multiple">Multiple:</span>
         <Select id="mulSelect">
@@ -84,12 +87,12 @@ function loadAIModel() {
   getByid("Yolo7").style.display = "none";
   getByid("Yolo7Original").style.display = "none";
   getByid("ich").style.display = "none";
+  getByid("bc").style.display = "none";
   getByid("circle").style.display = "none";
   getByid("rerunmodel").style.display = "none";
   getByid("errorMessage").style.display = "none";
 }
 loadAIModel();
-
 
 //handFilter報告內容
 function handFilterReport() {
@@ -108,7 +111,6 @@ function handFilterReport() {
   getByid("handFilterReport").style.display = "none";
 }
 handFilterReport();
-
 
 //設定是否出現rerun
 function Hidden() {
@@ -163,13 +165,21 @@ function Hidden() {
   //Yolo7Original
   if (aimodelname == "Yolo7Original" && Multiple == "Single" && yv7os > 0) {
     getByid("rerunmodel").style.display = "";
-  } else if (aimodelname == "Yolo7Original" && Multiple == "Single" && yv7os == 0) {
+  } else if (
+    aimodelname == "Yolo7Original" &&
+    Multiple == "Single" &&
+    yv7os == 0
+  ) {
     getByid("rerunmodel").style.display = "none";
   }
 
   if (aimodelname == "Yolo7Original" && Multiple == "Multiple" && yv7om > 0) {
     getByid("rerunmodel").style.display = "";
-  } else if (aimodelname == "Yolo7Original" && Multiple == "Multiple" && yv7om == 0) {
+  } else if (
+    aimodelname == "Yolo7Original" &&
+    Multiple == "Multiple" &&
+    yv7om == 0
+  ) {
     getByid("rerunmodel").style.display = "none";
   }
   //handFilter
@@ -194,13 +204,6 @@ function Hidden() {
   } else if (aimodelname == "SMART5" && sm5 == 0) {
     getByid("rerunmodel").style.display = "none";
   }
-  //ICH
-  if (aimodelname == "ICH" && ich > 0) {
-    getByid("rerunmodel").style.display = "";
-  } else if (aimodelname == "ICH" && ich == 0) {
-    getByid("rerunmodel").style.display = "none";
-  }
-
   if (aimodelname == "SMART5" || aimodelname == "ICH") {
     getByid("mulSelect").style.display = "none";
     getByid("multiple").style.display = "none";
@@ -209,8 +212,19 @@ function Hidden() {
     getByid("mulSelect").style.display = "";
     getByid("multiple").style.display = "";
   }
+  //ICH
+  if (aimodelname == "ICH" && ich > 0) {
+    getByid("rerunmodel").style.display = "";
+  } else if (aimodelname == "ICH" && ich == 0) {
+    getByid("rerunmodel").style.display = "none";
+  }
+  //BC
+  if (aimodelname == "BC" && bc > 0) {
+    getByid("rerunmodel").style.display = "";
+  } else if (aimodelname == "BC" && bc == 0) {
+    getByid("rerunmodel").style.display = "none";
+  }
 }
-
 
 //解析dicom檔案
 async function blob(streamsData) {
@@ -240,7 +254,6 @@ function load(time) {
   return new Promise((resolve) => setTimeout(resolve, time));
 }
 
-
 //handFilter 報告處理
 function handFilter(reportData) {
   for (let i = 0; i < reportData.length; i++) {
@@ -254,7 +267,6 @@ function handFilter(reportData) {
 
   showhandFilterReport();
 }
-
 
 function showhandFilterReport() {
   var SOPInstanceUID, Report;
@@ -271,7 +283,6 @@ function showhandFilterReport() {
   }
   updateReport(SOPInstanceUID, Report);
 }
-
 
 function updateReport(SOPInstanceUID, Report) {
   var ViewportSOPUID;
@@ -300,7 +311,6 @@ function deleteMark() {
   }
 }
 
-
 //選擇部位時顯示的model模型
 getByid("Bodypart").onchange = function () {
   getByid("errorMessage").innerHTML = "";
@@ -312,7 +322,8 @@ getByid("Bodypart").onchange = function () {
     getByid("Smart5").style.display = "none";
     getByid("Yolo7").style.display = "";
     getByid("Yolo7Original").style.display = "";
-    getByid("ich").style.display = "none"
+    getByid("ich").style.display = "none";
+    getByid("bc").style.display = "none";
     getByid("AIModelSelect").value = "";
   } else if (getByid("Bodypart").value == "Brain") {
     getByid("Smart5").style.display = "";
@@ -321,7 +332,8 @@ getByid("Bodypart").onchange = function () {
     getByid("Yolo3").style.display = "none";
     getByid("Yolo8").style.display = "none";
     getByid("Yolo4").style.display = "none";
-    getByid("ich").style.display = ""
+    getByid("ich").style.display = "";
+    getByid("bc").style.display = "none";
     getByid("AIModelSelect").value = "";
     getByid("handFilter").style.display = "none";
   } else if (getByid("Bodypart").value == "lung") {
@@ -332,11 +344,22 @@ getByid("Bodypart").onchange = function () {
     getByid("Smart5").style.display = "none";
     getByid("Yolo7").style.display = "none";
     getByid("Yolo7Original").style.display = "none";
-    getByid("ich").style.display = "none"
+    getByid("ich").style.display = "none";
+    getByid("bc").style.display = "none";
     getByid("AIModelSelect").value = "";
+  } else if (getByid("Bodypart").value == "breast") {
+    getByid("Yolo3").style.display = "none";
+    getByid("Yolo8").style.display = "none";
+    getByid("Yolo4").style.display = "none";
+    getByid("handFilter").style.display = "none";
+    getByid("Smart5").style.display = "none";
+    getByid("Yolo7").style.display = "none";
+    getByid("Yolo7Original").style.display = "none";
+    getByid("ich").style.display = "none";
+    getByid("bc").style.display = "";
+    getByid("AIModelSelect").value = "none";
   }
 };
-
 
 //前端顯示圖示更改
 getByid("AIModel").onclick = function () {
@@ -369,14 +392,16 @@ getByid("mulSelect").onchange = function (e) {
 getByid("runmodel").onclick = function () {
   var StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID, data;
   handReport = [];
-//   deleteMark();
+  //   deleteMark();
   getByid("errorMessage").style.display = "";
   getByid("errorMessage").innerHTML = "";
 
   if (
     getByid("AIModelSelect").value == "" ||
     (getByid("mulSelect").value == "" &&
-      getByid("AIModelSelect").value != "SMART5"&&getByid("AIModelSelect").value != "ICH")
+      getByid("AIModelSelect").value != "SMART5" &&
+      getByid("AIModelSelect").value != "ICH" &&
+      getByid("AIModelSelect").value != "BC")
   ) {
     return;
   }
@@ -398,7 +423,7 @@ getByid("runmodel").onclick = function () {
     data = {
       studyInstanceUid: StudyInstanceUID,
     };
-  } else if (Multiple == "Single") {
+  } else if (Multiple == "Single" || aimodelname == "BC") {
     data = {
       studyInstanceUid: StudyInstanceUID,
       seriesInstanceUid: SeriesInstanceUID,
@@ -563,7 +588,7 @@ getByid("runmodel").onclick = function () {
           console.error("請求失敗：", error);
         }
       });
-  }else if (aimodelname == "Yolo7Original") {
+  } else if (aimodelname == "Yolo7Original") {
     axios
       .post("yolov7Origin", data)
       .then(function (response) {
@@ -601,7 +626,7 @@ getByid("runmodel").onclick = function () {
           console.error("請求失敗：", error);
         }
       });
-  }else if (aimodelname == "handFilter") {
+  } else if (aimodelname == "handFilter") {
     axios
       .post("handfilter", data)
       .then(function (response) {
@@ -636,17 +661,17 @@ getByid("runmodel").onclick = function () {
     axios
       .post("ich", data)
       .then(function (response) {
-          getByid("circle").style.display = "none";
-          getByid("rerunmodel").style.display = "";
-          var j = 0;
-          for (var i = 0; i < response.data._streams.length; i += 3) {
-            aiInfoArray[j] = response.data._streams[i + 1].data;
-            j++;
-          }
-          for (var i = 0; i < aiInfoArray.length; i++) {
-            blob(aiInfoArray[i]);
-          }
-          ich++;
+        getByid("circle").style.display = "none";
+        getByid("rerunmodel").style.display = "";
+        var j = 0;
+        for (var i = 0; i < response.data._streams.length; i += 3) {
+          aiInfoArray[j] = response.data._streams[i + 1].data;
+          j++;
+        }
+        for (var i = 0; i < aiInfoArray.length; i++) {
+          blob(aiInfoArray[i]);
+        }
+        ich++;
       })
       .catch(function (error) {
         if (error.status == 400) {
@@ -663,7 +688,7 @@ getByid("runmodel").onclick = function () {
           console.error("請求失敗：", error);
         }
       });
-  }else if (aimodelname == "SMART5") {
+  } else if (aimodelname == "SMART5") {
     axios
       .post("smart5", data)
       .then(function (response) {
@@ -687,13 +712,37 @@ getByid("runmodel").onclick = function () {
           console.error("請求失敗：", error);
         }
       });
+  } else if (aimodelname == "BC") {
+    axios
+      .post("breast", data)
+      .then(function (response) {
+        getByid("circle").style.display = "none";
+        getByid("rerunmodel").style.display = "";
+        blob(response.data._streams[1].data);
+        bc++;
+      })
+      .catch(function (error) {
+        if (error.status == 400) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "PACS No such file";
+          console.error("請求失敗：", error);
+        } else if (error.status == 422) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "MongoDB Error";
+          console.error("請求失敗：", error);
+        } else if (error.status == 500) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "AI Server Error";
+          console.error("請求失敗：", error);
+        }
+      });
   }
 };
 
 getByid("rerunmodel").onclick = function () {
   var StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID, data;
   handReport = [];
-//   deleteMark();
+  //   deleteMark();
 
   getByid("errorMessage").style.display = "";
   getByid("errorMessage").innerHTML = "";
@@ -716,7 +765,7 @@ getByid("rerunmodel").onclick = function () {
       studyInstanceUid: StudyInstanceUID,
       reload: "true",
     };
-  } else if (Multiple == "Single") {
+  } else if (Multiple == "Single" || aimodelname == "BC") {
     data = {
       studyInstanceUid: StudyInstanceUID,
       seriesInstanceUid: SeriesInstanceUID,
@@ -836,7 +885,7 @@ getByid("rerunmodel").onclick = function () {
           console.error("請求失敗：", error);
         }
       });
-  }else if (aimodelname == "Yolo7") {
+  } else if (aimodelname == "Yolo7") {
     // deleteMark();
     axios
       .post("yolov7", data)
@@ -871,7 +920,7 @@ getByid("rerunmodel").onclick = function () {
           console.error("請求失敗：", error);
         }
       });
-  }else if (aimodelname == "Yolo7Original") {
+  } else if (aimodelname == "Yolo7Original") {
     // deleteMark();
     axios
       .post("yolov7Origin", data)
@@ -936,20 +985,20 @@ getByid("rerunmodel").onclick = function () {
           console.error("請求失敗：", error);
         }
       });
-  }else if (aimodelname == "ICH") {
+  } else if (aimodelname == "ICH") {
     axios
       .post("ich", data)
       .then(function (response) {
-          getByid("circle").style.display = "none";
-          getByid("rerunmodel").style.display = "";
-          var j = 0;
-          for (var i = 0; i < response.data._streams.length; i += 3) {
-            aiInfoArray[j] = response.data._streams[i + 1].data;
-            j++;
-          }
-          for (var i = 0; i < aiInfoArray.length; i++) {
-            blob(aiInfoArray[i]);
-          }
+        getByid("circle").style.display = "none";
+        getByid("rerunmodel").style.display = "";
+        var j = 0;
+        for (var i = 0; i < response.data._streams.length; i += 3) {
+          aiInfoArray[j] = response.data._streams[i + 1].data;
+          j++;
+        }
+        for (var i = 0; i < aiInfoArray.length; i++) {
+          blob(aiInfoArray[i]);
+        }
       })
       .catch(function (error) {
         if (error.status == 400) {
@@ -972,6 +1021,29 @@ getByid("rerunmodel").onclick = function () {
       .then(function (response) {
         getByid("circle").style.display = "none";
         getByid("rerunmodel").style.display = "";
+        blob(response.data._streams[1].data);
+      })
+      .catch(function (error) {
+        if (error.status == 400) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "PACS No such file";
+          console.error("請求失敗：", error);
+        } else if (error.status == 422) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "MongoDB Error";
+          console.error("請求失敗：", error);
+        } else if (error.status == 500) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "AI Server Error";
+          console.error("請求失敗：", error);
+        }
+      });
+  } else if (aimodelname == "BC") {
+    // deleteMark();
+    axios
+      .post("breast", data)
+      .then(function (response) {
+        getByid("circle").style.display = "none";
         blob(response.data._streams[1].data);
       })
       .catch(function (error) {
