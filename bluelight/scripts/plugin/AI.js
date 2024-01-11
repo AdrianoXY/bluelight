@@ -346,7 +346,7 @@ getByid("Bodypart").onchange = function () {
     getByid("ich").style.display = "none";
     getByid("bc").style.display = "none";
     getByid("AIModelSelect").value = "";
-  } else if (getByid("Bodypart").value == "breast") {
+  } else if (getByid("Bodypart").value == "Breast") {
     getByid("Yolo3").style.display = "none";
     getByid("Yolo8").style.display = "none";
     getByid("Yolo4").style.display = "none";
