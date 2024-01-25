@@ -120,7 +120,7 @@ function markZone() {
     DeleteMouseEvent();
 
     Mousedown = function (e) {
-      deleteMark();
+      // deleteMark();
       if (e.which == 1) MouseDownCheck = true;
       else if (e.which == 3) rightMouseDown = true;
       var currX = getCurrPoint(e)[0];
@@ -761,7 +761,7 @@ getByid("AIModelSelect").onchange = function (e) {
   } else {
     set_BL_model("MouseTool");
     mouseTool();
-    deleteMark();
+    // deleteMark();
   }
 };
 
