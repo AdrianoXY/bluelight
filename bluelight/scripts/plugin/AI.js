@@ -15,6 +15,7 @@ yv7os = 0;
 yv7om = 0;
 ich = 0;
 bc = 0;
+bt = 0;
 var markX = 0,
   markY = 0,
   markW = 0,
@@ -62,6 +63,7 @@ function loadAIModel() {
         <option id="Yolo7Original">Yolo7Original</option>
         <option id="ich">ICH</option>
         <option id="bc">BC</option>
+        <option id="bt">BrainTumors</option>
         </select>
         <span style="color: white;" id="multiple">Multiple:</span>
         <Select id="mulSelect">
@@ -91,6 +93,7 @@ function loadAIModel() {
   getByid("Yolo7Original").style.display = "none";
   getByid("ich").style.display = "none";
   getByid("bc").style.display = "none";
+  getbyid("bt").style.display = "none";
   getByid("circle").style.display = "none";
   getByid("rerunmodel").style.display = "none";
   getByid("errorMessage").style.display = "none";
@@ -580,11 +583,26 @@ function Hidden() {
   } else if (aimodelname == "SMART5" && sm5 == 0) {
     getByid("rerunmodel").style.display = "none";
   }
-  if (aimodelname == "SMART5" || aimodelname == "ICH" || aimodelname == "BC") {
+  //brainTumors
+  if (aimodelname == "BrainTumors" && bt > 0) {
+    getByid("rerunmodel").style.display = "";
+  } else if (aimodelname == "BrainTumors" && bt == 0) {
+    getByid("rerunmodel").style.display = "none";
+  }
+  if (
+    aimodelname == "SMART5" ||
+    aimodelname == "ICH" ||
+    aimodelname == "BC" ||
+    aimodelname == "BrainTumors"
+  ) {
     getByid("mulSelect").style.display = "none";
     getByid("multiple").style.display = "none";
     getByid("mulSelect").value = "";
-  } else if (aimodelname != "SMART5" || aimodelname == "ICH") {
+  } else if (
+    aimodelname != "SMART5" ||
+    aimodelname == "ICH" ||
+    aimodelname != "BrainTumors"
+  ) {
     getByid("mulSelect").style.display = "";
     getByid("multiple").style.display = "";
   }
@@ -700,9 +718,11 @@ getByid("Bodypart").onchange = function () {
     getByid("Yolo7Original").style.display = "";
     getByid("ich").style.display = "none";
     getByid("bc").style.display = "none";
+    getByid("bt").style.display = "none";
     getByid("AIModelSelect").value = "";
   } else if (getByid("Bodypart").value == "Brain") {
     getByid("Smart5").style.display = "";
+    getByid("bt").style.display = "";
     getByid("Yolo7").style.display = "none";
     getByid("Yolo7Original").style.display = "none";
     getByid("Yolo3").style.display = "none";
@@ -718,6 +738,7 @@ getByid("Bodypart").onchange = function () {
     getByid("Yolo4").style.display = "none";
     getByid("handFilter").style.display = "none";
     getByid("Smart5").style.display = "none";
+    getByid("bt").style.display = "none";
     getByid("Yolo7").style.display = "none";
     getByid("Yolo7Original").style.display = "none";
     getByid("ich").style.display = "none";
@@ -729,6 +750,7 @@ getByid("Bodypart").onchange = function () {
     getByid("Yolo4").style.display = "none";
     getByid("handFilter").style.display = "none";
     getByid("Smart5").style.display = "none";
+    getByid("bt").style.display = "none";
     getByid("Yolo7").style.display = "none";
     getByid("Yolo7Original").style.display = "none";
     getByid("ich").style.display = "none";
@@ -785,7 +807,8 @@ getByid("runmodel").onclick = function () {
     (getByid("mulSelect").value == "" &&
       getByid("AIModelSelect").value != "SMART5" &&
       getByid("AIModelSelect").value != "ICH" &&
-      getByid("AIModelSelect").value != "BC") ||
+      getByid("AIModelSelect").value != "BC" &&
+      getByid("AIModelSelect").value != "BrainTumors") ||
     (getByid("AIModelSelect").value == "BC" && markH == 0 && markW == 0)
   ) {
     getByid("errorMessage").innerHTML = "資料有誤，請重新使用一次";
@@ -805,7 +828,11 @@ getByid("runmodel").onclick = function () {
     }
   }
 
-  if (aimodelname == "SMART5" || aimodelname == "ICH") {
+  if (
+    aimodelname == "SMART5" ||
+    aimodelname == "ICH" ||
+    aimodelname == "BrainTumors"
+  ) {
     data = {
       studyInstanceUid: StudyInstanceUID,
     };
@@ -1106,6 +1133,30 @@ getByid("runmodel").onclick = function () {
           console.error("Request Error：", error);
         }
       });
+  } else if (aimodelname == "BrainTumors") {
+    axios
+      .post("brainTumors", data)
+      .then(function (response) {
+        getByid("circle").style.display = "none";
+        getByid("rerunmodel").style.display = "";
+        blob(response.data._streams[1].data);
+        bt++;
+      })
+      .catch(function (error) {
+        if (error.status == 400) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "PACS No such file";
+          console.error("Request Error：", error);
+        } else if (error.status == 422) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "MongoDB Error";
+          console.error("Request Error：", error);
+        } else if (error.status == 500) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "AI Server Error";
+          console.error("Request Error：", error);
+        }
+      });
   } else if (aimodelname == "BC") {
     axios
       .post("breast", data)
@@ -1149,7 +1200,8 @@ getByid("rerunmodel").onclick = function () {
     (getByid("mulSelect").value == "" &&
       getByid("AIModelSelect").value != "SMART5" &&
       getByid("AIModelSelect").value != "ICH" &&
-      getByid("AIModelSelect").value != "BC") ||
+      getByid("AIModelSelect").value != "BC" &&
+      getByid("AIModelSelect").value != "BrainTumors") ||
     (getByid("AIModelSelect").value == "BC" && markH == 0 && markW == 0)
   ) {
     getByid("errorMessage").innerHTML = "Error,Please Try Again Later";
@@ -1166,7 +1218,11 @@ getByid("rerunmodel").onclick = function () {
     }
   }
 
-  if (aimodelname == "SMART5" || aimodelname == "ICH") {
+  if (
+    aimodelname == "SMART5" ||
+    aimodelname == "ICH" ||
+    aimodelname == "BrainTumors"
+  ) {
     data = {
       studyInstanceUid: StudyInstanceUID,
       reload: "true",
@@ -1432,6 +1488,29 @@ getByid("rerunmodel").onclick = function () {
   } else if (aimodelname == "SMART5") {
     axios
       .post("smart5", data)
+      .then(function (response) {
+        getByid("circle").style.display = "none";
+        getByid("rerunmodel").style.display = "";
+        blob(response.data._streams[1].data);
+      })
+      .catch(function (error) {
+        if (error.status == 400) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "PACS No such file";
+          console.error("Request Error：", error);
+        } else if (error.status == 422) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "MongoDB Error";
+          console.error("Request Error：", error);
+        } else if (error.status == 500) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "AI Server Error";
+          console.error("Request Error：", error);
+        }
+      });
+  } else if (aimodelname == "BrainTumors") {
+    axios
+      .post("brainTumors", data)
       .then(function (response) {
         getByid("circle").style.display = "none";
         getByid("rerunmodel").style.display = "";
