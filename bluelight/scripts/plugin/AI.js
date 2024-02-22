@@ -1,21 +1,21 @@
 var openAIModel = false;
 //計數參數
-var yv3s = 0,
-  yv3m = 0;
-yv4s = 0;
+var yv4s = 0;
 yv4m = 0;
-yv8s = 0;
-yv8m = 0;
 hfs = 0;
 hfm = 0;
-sm5 = 0;
 yv7s = 0;
 yv7m = 0;
 yv7os = 0;
-yv7om = 0;
+yv7om = 0; //手部
+sm5 = 0;
 ich = 0;
-bc = 0;
-bt = 0;
+bt = 0; //腦部
+(yv3s = 0), (yv3m = 0);
+yv8s = 0;
+yv8m = 0; //肺部
+bc = 0; //胸部
+
 var markX = 0,
   markY = 0,
   markW = 0,
@@ -54,16 +54,19 @@ function loadAIModel() {
         <span style="color: white;" id="AIModelSpan">AI Model:</span>
         <select id="AIModelSelect">
         <option selected="selected"></option>
-        <option id="Yolo3">Yolo3</option>
         <option id="Yolo4">Yolo4</option>
-        <option id="Yolo8">Yolo8</option>
         <option id="handFilter">handFilter</option>
-        <option id="Smart5">SMART5</option>
         <option id="Yolo7">Yolo7</option>
         <option id="Yolo7Original">Yolo7Original</option>
+
+        <option id="Smart5">SMART5</option>
         <option id="ich">ICH</option>
-        <option id="bc">BC</option>
         <option id="bt">BrainTumors</option>
+
+        <option id="Yolo3">Yolo3</option>
+        <option id="Yolo8">Yolo8</option>
+        
+        <option id="bc">BC</option>
         </select>
         <span style="color: white;" id="multiple">Multiple:</span>
         <Select id="mulSelect">
@@ -84,16 +87,25 @@ function loadAIModel() {
       `;
   getByid("page-header").appendChild(span);
   getByid("AIModeldiv").style.display = "none";
-  getByid("Yolo3").style.display = "none";
-  getByid("Yolo8").style.display = "none";
+
+  //手部
   getByid("Yolo4").style.display = "none";
   getByid("handFilter").style.display = "none";
-  getByid("Smart5").style.display = "none";
   getByid("Yolo7").style.display = "none";
   getByid("Yolo7Original").style.display = "none";
+
+  //腦部
+  getByid("Smart5").style.display = "none";
   getByid("ich").style.display = "none";
+  getByid("bt").style.display = "none";
+
+  //肺部
+  getByid("Yolo3").style.display = "none";
+  getByid("Yolo8").style.display = "none";
+
+  //胸部
   getByid("bc").style.display = "none";
-  getbyid("bt").style.display = "none";
+
   getByid("circle").style.display = "none";
   getByid("rerunmodel").style.display = "none";
   getByid("errorMessage").style.display = "none";
@@ -118,6 +130,7 @@ function handFilterReport() {
 }
 handFilterReport();
 
+//ICH選取查看區塊
 function markZone() {
   if (BL_mode == "markZone") {
     DeleteMouseEvent();
@@ -479,6 +492,7 @@ function markZone() {
   AddMouseEvent();
 }
 
+//ICH計算座標
 function calculateSquareCoordinates(x1, y1, x2, y2) {
   var minX = Math.min(x1, x2);
   var minY = Math.min(y1, y2);
@@ -493,18 +507,7 @@ function calculateSquareCoordinates(x1, y1, x2, y2) {
 
 //設定是否出現rerun
 function Hidden() {
-  //Yolo3
-  if (aimodelname == "Yolo3" && Multiple == "Single" && yv3s > 0) {
-    getByid("rerunmodel").style.display = "";
-  } else if (aimodelname == "Yolo3" && Multiple == "Single" && yv3s == 0) {
-    getByid("rerunmodel").style.display = "none";
-  }
-
-  if (aimodelname == "Yolo3" && Multiple == "Multiple" && yv3m > 0) {
-    getByid("rerunmodel").style.display = "";
-  } else if (aimodelname == "Yolo3" && Multiple == "Multiple" && yv3m == 0) {
-    getByid("rerunmodel").style.display = "none";
-  }
+  //手部
   //Yolo4
   if (aimodelname == "Yolo4" && Multiple == "Single" && yv4s > 0) {
     getByid("rerunmodel").style.display = "";
@@ -517,18 +520,24 @@ function Hidden() {
   } else if (aimodelname == "Yolo4" && Multiple == "Multiple" && yv4m == 0) {
     getByid("rerunmodel").style.display = "none";
   }
-  //Yolo8
-  if (aimodelname == "Yolo8" && Multiple == "Single" && yv8s > 0) {
+
+  //handFilter
+  if (aimodelname == "handFilter" && Multiple == "Single" && hfs > 0) {
     getByid("rerunmodel").style.display = "";
-  } else if (aimodelname == "Yolo8" && Multiple == "Single" && yv8s == 0) {
+  } else if (aimodelname == "handFilter" && Multiple == "Single" && hfs == 0) {
     getByid("rerunmodel").style.display = "none";
   }
 
-  if (aimodelname == "Yolo8" && Multiple == "Multiple" && yv8m > 0) {
+  if (aimodelname == "handFilter" && Multiple == "Multiple" && hfm > 0) {
     getByid("rerunmodel").style.display = "";
-  } else if (aimodelname == "Yolo8" && Multiple == "Multiple" && yv8m == 0) {
+  } else if (
+    aimodelname == "handFilter" &&
+    Multiple == "Multiple" &&
+    hfm == 0
+  ) {
     getByid("rerunmodel").style.display = "none";
   }
+
   //Yolo7
   if (aimodelname == "Yolo7" && Multiple == "Single" && yv7s > 0) {
     getByid("rerunmodel").style.display = "";
@@ -561,26 +570,19 @@ function Hidden() {
   ) {
     getByid("rerunmodel").style.display = "none";
   }
-  //handFilter
-  if (aimodelname == "handFilter" && Multiple == "Single" && hfs > 0) {
-    getByid("rerunmodel").style.display = "";
-  } else if (aimodelname == "handFilter" && Multiple == "Single" && hfs == 0) {
-    getByid("rerunmodel").style.display = "none";
-  }
+  //手部
 
-  if (aimodelname == "handFilter" && Multiple == "Multiple" && hfm > 0) {
-    getByid("rerunmodel").style.display = "";
-  } else if (
-    aimodelname == "handFilter" &&
-    Multiple == "Multiple" &&
-    hfm == 0
-  ) {
-    getByid("rerunmodel").style.display = "none";
-  }
+  //腦部
   //SMART5
   if (aimodelname == "SMART5" && sm5 > 0) {
     getByid("rerunmodel").style.display = "";
   } else if (aimodelname == "SMART5" && sm5 == 0) {
+    getByid("rerunmodel").style.display = "none";
+  }
+  //ICH
+  if (aimodelname == "ICH" && ich > 0) {
+    getByid("rerunmodel").style.display = "";
+  } else if (aimodelname == "ICH" && ich == 0) {
     getByid("rerunmodel").style.display = "none";
   }
   //brainTumors
@@ -589,6 +591,46 @@ function Hidden() {
   } else if (aimodelname == "BrainTumors" && bt == 0) {
     getByid("rerunmodel").style.display = "none";
   }
+  //腦部
+
+  //肺部
+  //Yolo3
+  if (aimodelname == "Yolo3" && Multiple == "Single" && yv3s > 0) {
+    getByid("rerunmodel").style.display = "";
+  } else if (aimodelname == "Yolo3" && Multiple == "Single" && yv3s == 0) {
+    getByid("rerunmodel").style.display = "none";
+  }
+
+  if (aimodelname == "Yolo3" && Multiple == "Multiple" && yv3m > 0) {
+    getByid("rerunmodel").style.display = "";
+  } else if (aimodelname == "Yolo3" && Multiple == "Multiple" && yv3m == 0) {
+    getByid("rerunmodel").style.display = "none";
+  }
+
+  //Yolo8
+  if (aimodelname == "Yolo8" && Multiple == "Single" && yv8s > 0) {
+    getByid("rerunmodel").style.display = "";
+  } else if (aimodelname == "Yolo8" && Multiple == "Single" && yv8s == 0) {
+    getByid("rerunmodel").style.display = "none";
+  }
+
+  if (aimodelname == "Yolo8" && Multiple == "Multiple" && yv8m > 0) {
+    getByid("rerunmodel").style.display = "";
+  } else if (aimodelname == "Yolo8" && Multiple == "Multiple" && yv8m == 0) {
+    getByid("rerunmodel").style.display = "none";
+  }
+  //肺部
+
+  //胸部
+  //BC
+  if (aimodelname == "BC" && bc > 0) {
+    getByid("rerunmodel").style.display = "";
+  } else if (aimodelname == "BC" && bc == 0) {
+    getByid("rerunmodel").style.display = "none";
+  }
+  //胸部
+
+  //多張單張欄位顯示
   if (
     aimodelname == "SMART5" ||
     aimodelname == "ICH" ||
@@ -605,18 +647,6 @@ function Hidden() {
   ) {
     getByid("mulSelect").style.display = "";
     getByid("multiple").style.display = "";
-  }
-  //ICH
-  if (aimodelname == "ICH" && ich > 0) {
-    getByid("rerunmodel").style.display = "";
-  } else if (aimodelname == "ICH" && ich == 0) {
-    getByid("rerunmodel").style.display = "none";
-  }
-  //BC
-  if (aimodelname == "BC" && bc > 0) {
-    getByid("rerunmodel").style.display = "";
-  } else if (aimodelname == "BC" && bc == 0) {
-    getByid("rerunmodel").style.display = "none";
   }
 }
 
@@ -709,52 +739,68 @@ function deleteMark() {
 getByid("Bodypart").onchange = function () {
   getByid("errorMessage").innerHTML = "";
   if (getByid("Bodypart").value == "Hand") {
-    getByid("handFilter").style.display = "";
-    getByid("Yolo3").style.display = "none";
-    getByid("Yolo8").style.display = "none";
     getByid("Yolo4").style.display = "";
-    getByid("Smart5").style.display = "none";
+    getByid("handFilter").style.display = "";
     getByid("Yolo7").style.display = "";
     getByid("Yolo7Original").style.display = "";
+
+    getByid("Smart5").style.display = "none";
     getByid("ich").style.display = "none";
-    getByid("bc").style.display = "none";
     getByid("bt").style.display = "none";
+
+    getByid("Yolo3").style.display = "none";
+    getByid("Yolo8").style.display = "none";
+
+    getByid("bc").style.display = "none";
+
     getByid("AIModelSelect").value = "";
   } else if (getByid("Bodypart").value == "Brain") {
     getByid("Smart5").style.display = "";
     getByid("bt").style.display = "";
+    getByid("ich").style.display = "";
+
+    getByid("Yolo4").style.display = "none";
+    getByid("handFilter").style.display = "none";
     getByid("Yolo7").style.display = "none";
     getByid("Yolo7Original").style.display = "none";
+
     getByid("Yolo3").style.display = "none";
     getByid("Yolo8").style.display = "none";
-    getByid("Yolo4").style.display = "none";
-    getByid("ich").style.display = "";
+
     getByid("bc").style.display = "none";
+
     getByid("AIModelSelect").value = "";
-    getByid("handFilter").style.display = "none";
   } else if (getByid("Bodypart").value == "lung") {
     getByid("Yolo3").style.display = "";
     getByid("Yolo8").style.display = "";
+
     getByid("Yolo4").style.display = "none";
     getByid("handFilter").style.display = "none";
-    getByid("Smart5").style.display = "none";
-    getByid("bt").style.display = "none";
     getByid("Yolo7").style.display = "none";
     getByid("Yolo7Original").style.display = "none";
+
+    getByid("Smart5").style.display = "none";
+    getByid("bt").style.display = "none";
     getByid("ich").style.display = "none";
+
     getByid("bc").style.display = "none";
+
     getByid("AIModelSelect").value = "";
   } else if (getByid("Bodypart").value == "Breast") {
-    getByid("Yolo3").style.display = "none";
-    getByid("Yolo8").style.display = "none";
+    getByid("bc").style.display = "";
+
     getByid("Yolo4").style.display = "none";
     getByid("handFilter").style.display = "none";
-    getByid("Smart5").style.display = "none";
-    getByid("bt").style.display = "none";
     getByid("Yolo7").style.display = "none";
     getByid("Yolo7Original").style.display = "none";
+
+    getByid("Smart5").style.display = "none";
+    getByid("bt").style.display = "none";
     getByid("ich").style.display = "none";
-    getByid("bc").style.display = "";
+
+    getByid("Yolo3").style.display = "none";
+    getByid("Yolo8").style.display = "none";
+
     getByid("AIModelSelect").value = "none";
   }
 };
@@ -857,83 +903,8 @@ getByid("runmodel").onclick = function () {
     };
   }
 
-  if (aimodelname == "Yolo3") {
-    axios
-      .post("yolov3", data)
-      .then(function (response) {
-        if (response.status == 200 && Multiple == "Single") {
-          getByid("circle").style.display = "none";
-          getByid("rerunmodel").style.display = "";
-          blob(response.data._streams[1].data);
-          yv3s++;
-        } else if (response.status == 200 && Multiple == "Multiple") {
-          getByid("circle").style.display = "none";
-          getByid("rerunmodel").style.display = "";
-          var j = 0;
-          for (var i = 0; i < response.data._streams.length; i += 3) {
-            aiInfoArray[j] = response.data._streams[i + 1].data;
-            j++;
-          }
-          for (var i = 0; i < aiInfoArray.length; i++) {
-            blob(aiInfoArray[i]);
-          }
-          yv3m++;
-        }
-      })
-      .catch(function (error) {
-        if (error.status == 400) {
-          getByid("circle").style.display = "none";
-          getByid("errorMessage").innerHTML = "PACS No such file";
-          console.error("Request Error：", error);
-        } else if (error.status == 422) {
-          getByid("circle").style.display = "none";
-          getByid("errorMessage").innerHTML = "MongoDB Error";
-          console.error("Request Error：", error);
-        } else if (error.status == 500) {
-          getByid("circle").style.display = "none";
-          getByid("errorMessage").innerHTML = "AI Server Error";
-          console.error("Request Error：", error);
-        }
-      });
-  } else if (aimodelname == "Yolo8") {
-    axios
-      .post("yolov8", data)
-      .then(function (response) {
-        if (response.status == 200 && Multiple == "Single") {
-          getByid("circle").style.display = "none";
-          getByid("rerunmodel").style.display = "";
-          blob(response.data._streams[1].data);
-          yv8s++;
-        } else if (response.status == 200 && Multiple == "Multiple") {
-          getByid("circle").style.display = "none";
-          getByid("rerunmodel").style.display = "";
-          var j = 0;
-          for (var i = 0; i < response.data._streams.length; i += 3) {
-            aiInfoArray[j] = response.data._streams[i + 1].data;
-            j++;
-          }
-          for (var i = 0; i < aiInfoArray.length; i++) {
-            blob(aiInfoArray[i]);
-          }
-          yv8m++;
-        }
-      })
-      .catch(function (error) {
-        if (error.status == 400) {
-          getByid("circle").style.display = "none";
-          getByid("errorMessage").innerHTML = "PACS No such file";
-          console.error("Request Error：", error);
-        } else if (error.status == 422) {
-          getByid("circle").style.display = "none";
-          getByid("errorMessage").innerHTML = "MongoDB Error";
-          console.error("Request Error：", error);
-        } else if (error.status == 500) {
-          getByid("circle").style.display = "none";
-          getByid("errorMessage").innerHTML = "AI Server Error";
-          console.error("Request Error：", error);
-        }
-      });
-  } else if (aimodelname == "Yolo4") {
+  //手部
+  if (aimodelname == "Yolo4") {
     axios
       .post("yolov4", data)
       .then(function (response) {
@@ -954,6 +925,37 @@ getByid("runmodel").onclick = function () {
             blob(aiInfoArray[i]);
           }
           yv4m++;
+        }
+      })
+      .catch(function (error) {
+        if (error.status == 400) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "PACS No such file";
+          console.error("Request Error：", error);
+        } else if (error.status == 422) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "MongoDB Error";
+          console.error("Request Error：", error);
+        } else if (error.status == 500) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "AI Server Error";
+          console.error("Request Error：", error);
+        }
+      });
+  } else if (aimodelname == "handFilter") {
+    axios
+      .post("handfilter", data)
+      .then(function (response) {
+        if (response.status == 200 && Multiple == "Single") {
+          getByid("circle").style.display = "none";
+          getByid("rerunmodel").style.display = "";
+          handFilter(response.data);
+          hfs++;
+        } else if (response.status == 200 && Multiple == "Multiple") {
+          getByid("circle").style.display = "none";
+          getByid("rerunmodel").style.display = "";
+          handFilter(response.data);
+          hfm++;
         }
       })
       .catch(function (error) {
@@ -1047,21 +1049,16 @@ getByid("runmodel").onclick = function () {
           console.error("Request Error：", error);
         }
       });
-  } else if (aimodelname == "handFilter") {
+  }
+  //腦部
+  else if (aimodelname == "SMART5") {
     axios
-      .post("handfilter", data)
+      .post("smart5", data)
       .then(function (response) {
-        if (response.status == 200 && Multiple == "Single") {
-          getByid("circle").style.display = "none";
-          getByid("rerunmodel").style.display = "";
-          handFilter(response.data);
-          hfs++;
-        } else if (response.status == 200 && Multiple == "Multiple") {
-          getByid("circle").style.display = "none";
-          getByid("rerunmodel").style.display = "";
-          handFilter(response.data);
-          hfm++;
-        }
+        getByid("circle").style.display = "none";
+        getByid("rerunmodel").style.display = "";
+        blob(response.data._streams[1].data);
+        sm5++;
       })
       .catch(function (error) {
         if (error.status == 400) {
@@ -1109,30 +1106,6 @@ getByid("runmodel").onclick = function () {
           console.error("Request Error：", error);
         }
       });
-  } else if (aimodelname == "SMART5") {
-    axios
-      .post("smart5", data)
-      .then(function (response) {
-        getByid("circle").style.display = "none";
-        getByid("rerunmodel").style.display = "";
-        blob(response.data._streams[1].data);
-        sm5++;
-      })
-      .catch(function (error) {
-        if (error.status == 400) {
-          getByid("circle").style.display = "none";
-          getByid("errorMessage").innerHTML = "PACS No such file";
-          console.error("Request Error：", error);
-        } else if (error.status == 422) {
-          getByid("circle").style.display = "none";
-          getByid("errorMessage").innerHTML = "MongoDB Error";
-          console.error("Request Error：", error);
-        } else if (error.status == 500) {
-          getByid("circle").style.display = "none";
-          getByid("errorMessage").innerHTML = "AI Server Error";
-          console.error("Request Error：", error);
-        }
-      });
   } else if (aimodelname == "BrainTumors") {
     axios
       .post("brainTumors", data)
@@ -1157,7 +1130,87 @@ getByid("runmodel").onclick = function () {
           console.error("Request Error：", error);
         }
       });
-  } else if (aimodelname == "BC") {
+  }
+  //肺部
+  else if (aimodelname == "Yolo3") {
+    axios
+      .post("yolov3", data)
+      .then(function (response) {
+        if (response.status == 200 && Multiple == "Single") {
+          getByid("circle").style.display = "none";
+          getByid("rerunmodel").style.display = "";
+          blob(response.data._streams[1].data);
+          yv3s++;
+        } else if (response.status == 200 && Multiple == "Multiple") {
+          getByid("circle").style.display = "none";
+          getByid("rerunmodel").style.display = "";
+          var j = 0;
+          for (var i = 0; i < response.data._streams.length; i += 3) {
+            aiInfoArray[j] = response.data._streams[i + 1].data;
+            j++;
+          }
+          for (var i = 0; i < aiInfoArray.length; i++) {
+            blob(aiInfoArray[i]);
+          }
+          yv3m++;
+        }
+      })
+      .catch(function (error) {
+        if (error.status == 400) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "PACS No such file";
+          console.error("Request Error：", error);
+        } else if (error.status == 422) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "MongoDB Error";
+          console.error("Request Error：", error);
+        } else if (error.status == 500) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "AI Server Error";
+          console.error("Request Error：", error);
+        }
+      });
+  } else if (aimodelname == "Yolo8") {
+    axios
+      .post("yolov8", data)
+      .then(function (response) {
+        if (response.status == 200 && Multiple == "Single") {
+          getByid("circle").style.display = "none";
+          getByid("rerunmodel").style.display = "";
+          blob(response.data._streams[1].data);
+          yv8s++;
+        } else if (response.status == 200 && Multiple == "Multiple") {
+          getByid("circle").style.display = "none";
+          getByid("rerunmodel").style.display = "";
+          var j = 0;
+          for (var i = 0; i < response.data._streams.length; i += 3) {
+            aiInfoArray[j] = response.data._streams[i + 1].data;
+            j++;
+          }
+          for (var i = 0; i < aiInfoArray.length; i++) {
+            blob(aiInfoArray[i]);
+          }
+          yv8m++;
+        }
+      })
+      .catch(function (error) {
+        if (error.status == 400) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "PACS No such file";
+          console.error("Request Error：", error);
+        } else if (error.status == 422) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "MongoDB Error";
+          console.error("Request Error：", error);
+        } else if (error.status == 500) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "AI Server Error";
+          console.error("Request Error：", error);
+        }
+      });
+  }
+  //胸部
+  else if (aimodelname == "BC") {
     axios
       .post("breast", data)
       .then(function (response) {
@@ -1250,77 +1303,8 @@ getByid("rerunmodel").onclick = function () {
     };
   }
 
-  if (aimodelname == "Yolo3") {
-    // deleteMark();
-    axios
-      .post("yolov3", data)
-      .then(function (response) {
-        if (response.status == 200 && Multiple == "Single") {
-          getByid("circle").style.display = "none";
-          blob(response.data._streams[1].data);
-        } else if (response.status == 200 && Multiple == "Multiple") {
-          getByid("circle").style.display = "none";
-          var j = 0;
-          for (var i = 0; i < response.data._streams.length; i += 3) {
-            aiInfoArray[j] = response.data._streams[i + 1].data;
-            j++;
-          }
-          for (var i = 0; i < aiInfoArray.length; i++) {
-            blob(aiInfoArray[i]);
-          }
-        }
-      })
-      .catch(function (error) {
-        if (error.status == 400) {
-          getByid("circle").style.display = "none";
-          getByid("errorMessage").innerHTML = "PACS No such file";
-          console.error("Request Error：", error);
-        } else if (error.status == 422) {
-          getByid("circle").style.display = "none";
-          getByid("errorMessage").innerHTML = "MongoDB Error";
-          console.error("Request Error：", error);
-        } else if (error.status == 500) {
-          getByid("circle").style.display = "none";
-          getByid("errorMessage").innerHTML = "AI Server Error";
-          console.error("Request Error：", error);
-        }
-      });
-  } else if (aimodelname == "Yolo8") {
-    // deleteMark();
-    axios
-      .post("yolov8", data)
-      .then(function (response) {
-        if (response.status == 200 && Multiple == "Single") {
-          getByid("circle").style.display = "none";
-          blob(response.data._streams[1].data);
-        } else if (response.status == 200 && Multiple == "Multiple") {
-          getByid("circle").style.display = "none";
-          var j = 0;
-          for (var i = 0; i < response.data._streams.length; i += 3) {
-            aiInfoArray[j] = response.data._streams[i + 1].data;
-            j++;
-          }
-          for (var i = 0; i < aiInfoArray.length; i++) {
-            blob(aiInfoArray[i]);
-          }
-        }
-      })
-      .catch(function (error) {
-        if (error.status == 400) {
-          getByid("circle").style.display = "none";
-          getByid("errorMessage").innerHTML = "PACS No such file";
-          console.error("Request Error：", error);
-        } else if (error.status == 422) {
-          getByid("circle").style.display = "none";
-          getByid("errorMessage").innerHTML = "MongoDB Error";
-          console.error("Request Error：", error);
-        } else if (error.status == 500) {
-          getByid("circle").style.display = "none";
-          getByid("errorMessage").innerHTML = "AI Server Error";
-          console.error("Request Error：", error);
-        }
-      });
-  } else if (aimodelname == "Yolo4") {
+  //手部
+  if (aimodelname == "Yolo4") {
     // deleteMark();
     axios
       .post("yolov4", data)
@@ -1338,6 +1322,36 @@ getByid("rerunmodel").onclick = function () {
           for (var i = 0; i < aiInfoArray.length; i++) {
             blob(aiInfoArray[i]);
           }
+        }
+      })
+      .catch(function (error) {
+        if (error.status == 400) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "PACS No such file";
+          console.error("Request Error：", error);
+        } else if (error.status == 422) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "MongoDB Error";
+          console.error("Request Error：", error);
+        } else if (error.status == 500) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "AI Server Error";
+          console.error("Request Error：", error);
+        }
+      });
+  } else if (aimodelname == "handFilter") {
+    handReport = [];
+    axios
+      .post("handfilter", data)
+      .then(function (response) {
+        if (response.status == 200 && Multiple == "Single") {
+          getByid("circle").style.display = "none";
+          getByid("rerunmodel").style.display = "";
+          handFilter(response.data);
+        } else if (response.status == 200 && Multiple == "Multiple") {
+          getByid("circle").style.display = "none";
+          getByid("rerunmodel").style.display = "";
+          handFilter(response.data);
         }
       })
       .catch(function (error) {
@@ -1425,20 +1439,15 @@ getByid("rerunmodel").onclick = function () {
           console.error("Request Error：", error);
         }
       });
-  } else if (aimodelname == "handFilter") {
-    handReport = [];
+  }
+  //腦部
+  else if (aimodelname == "SMART5") {
     axios
-      .post("handfilter", data)
+      .post("smart5", data)
       .then(function (response) {
-        if (response.status == 200 && Multiple == "Single") {
-          getByid("circle").style.display = "none";
-          getByid("rerunmodel").style.display = "";
-          handFilter(response.data);
-        } else if (response.status == 200 && Multiple == "Multiple") {
-          getByid("circle").style.display = "none";
-          getByid("rerunmodel").style.display = "";
-          handFilter(response.data);
-        }
+        getByid("circle").style.display = "none";
+        getByid("rerunmodel").style.display = "";
+        blob(response.data._streams[1].data);
       })
       .catch(function (error) {
         if (error.status == 400) {
@@ -1485,29 +1494,6 @@ getByid("rerunmodel").onclick = function () {
           console.error("Request Error：", error);
         }
       });
-  } else if (aimodelname == "SMART5") {
-    axios
-      .post("smart5", data)
-      .then(function (response) {
-        getByid("circle").style.display = "none";
-        getByid("rerunmodel").style.display = "";
-        blob(response.data._streams[1].data);
-      })
-      .catch(function (error) {
-        if (error.status == 400) {
-          getByid("circle").style.display = "none";
-          getByid("errorMessage").innerHTML = "PACS No such file";
-          console.error("Request Error：", error);
-        } else if (error.status == 422) {
-          getByid("circle").style.display = "none";
-          getByid("errorMessage").innerHTML = "MongoDB Error";
-          console.error("Request Error：", error);
-        } else if (error.status == 500) {
-          getByid("circle").style.display = "none";
-          getByid("errorMessage").innerHTML = "AI Server Error";
-          console.error("Request Error：", error);
-        }
-      });
   } else if (aimodelname == "BrainTumors") {
     axios
       .post("brainTumors", data)
@@ -1531,7 +1517,81 @@ getByid("rerunmodel").onclick = function () {
           console.error("Request Error：", error);
         }
       });
-  } else if (aimodelname == "BC") {
+  }
+  //肺部
+  else if (aimodelname == "Yolo3") {
+    // deleteMark();
+    axios
+      .post("yolov3", data)
+      .then(function (response) {
+        if (response.status == 200 && Multiple == "Single") {
+          getByid("circle").style.display = "none";
+          blob(response.data._streams[1].data);
+        } else if (response.status == 200 && Multiple == "Multiple") {
+          getByid("circle").style.display = "none";
+          var j = 0;
+          for (var i = 0; i < response.data._streams.length; i += 3) {
+            aiInfoArray[j] = response.data._streams[i + 1].data;
+            j++;
+          }
+          for (var i = 0; i < aiInfoArray.length; i++) {
+            blob(aiInfoArray[i]);
+          }
+        }
+      })
+      .catch(function (error) {
+        if (error.status == 400) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "PACS No such file";
+          console.error("Request Error：", error);
+        } else if (error.status == 422) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "MongoDB Error";
+          console.error("Request Error：", error);
+        } else if (error.status == 500) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "AI Server Error";
+          console.error("Request Error：", error);
+        }
+      });
+  } else if (aimodelname == "Yolo8") {
+    // deleteMark();
+    axios
+      .post("yolov8", data)
+      .then(function (response) {
+        if (response.status == 200 && Multiple == "Single") {
+          getByid("circle").style.display = "none";
+          blob(response.data._streams[1].data);
+        } else if (response.status == 200 && Multiple == "Multiple") {
+          getByid("circle").style.display = "none";
+          var j = 0;
+          for (var i = 0; i < response.data._streams.length; i += 3) {
+            aiInfoArray[j] = response.data._streams[i + 1].data;
+            j++;
+          }
+          for (var i = 0; i < aiInfoArray.length; i++) {
+            blob(aiInfoArray[i]);
+          }
+        }
+      })
+      .catch(function (error) {
+        if (error.status == 400) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "PACS No such file";
+          console.error("Request Error：", error);
+        } else if (error.status == 422) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "MongoDB Error";
+          console.error("Request Error：", error);
+        } else if (error.status == 500) {
+          getByid("circle").style.display = "none";
+          getByid("errorMessage").innerHTML = "AI Server Error";
+          console.error("Request Error：", error);
+        }
+      });
+  }
+  //胸部
+  else if (aimodelname == "BC") {
     // deleteMark();
     axios
       .post("breast", data)
