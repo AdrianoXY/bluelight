@@ -130,7 +130,7 @@ function handFilterReport() {
 }
 handFilterReport();
 
-//ICH選取查看區塊
+//BC選取查看區塊
 function markZone() {
   if (BL_mode == "markZone") {
     DeleteMouseEvent();
@@ -492,7 +492,7 @@ function markZone() {
   AddMouseEvent();
 }
 
-//ICH計算座標
+//BC計算選取座標
 function calculateSquareCoordinates(x1, y1, x2, y2) {
   var minX = Math.min(x1, x2);
   var minY = Math.min(y1, y2);
